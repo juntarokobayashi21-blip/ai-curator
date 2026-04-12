@@ -22,10 +22,15 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
   （元記事URLではなくコメントページURLを必ず使うこと）
 
 **Zenn トレンド**
-- https://zenn.dev/trending をWebFetchで取得
+- https://zenn.dev/feed をWebFetchで取得
 
 **Qiita トレンド**
-- https://qiita.com/trend をWebFetchで取得
+- https://qiita.com/popular-items/feed をWebFetchで取得
+
+**Google News**
+- 以下の2つのRSSフィードをWebFetchで取得し、タイトルとURLを抽出する：
+  - IT: `https://news.google.com/rss/search?q=technology&hl=ja&gl=JP&ceid=JP:ja`
+  - ビジネス: `https://news.google.com/rss/search?q=business&hl=ja&gl=JP&ceid=JP:ja`
 
 **Reddit**
 - WebFetchツールはreddit.comをブロックするため、以下のBashコマンドを使用：
