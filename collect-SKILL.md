@@ -66,52 +66,98 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
 
 ### ステップ5: HTMLファイル生成
 
-`.md` ファイルと同じ内容を `ideas/daily/YYYYMMDD-trend.html` にも保存する。
+`.md` ファイルをスマホ対応のカードレイアウトHTMLに変換して `ideas/daily/YYYYMMDD-trend.html` に保存する。
+★★★はカード形式、★★はリスト形式、★はコンパクトなリスト形式で表示する。
 
-以下のPythonコマンドで変換する：
+以下のPythonスクリプトで変換する（`DATE`と`DATE_FMT`は実際の日付に置換）：
+
 ```bash
-python3 -c "
+python3 << 'PYEOF'
 import re, pathlib
 
-md_path = 'ideas/daily/YYYYMMDDtrend.md'  # 実際の日付に置換
-html_path = md_path.replace('.md', '.html')
-
+DATE = 'YYYYMMDD'        # 例: 20260412
+DATE_FMT = 'YYYY-MM-DD'  # 例: 2026-04-12
+md_path = f'ideas/daily/{DATE}-trend.md'
+html_path = f'ideas/daily/{DATE}-trend.html'
 md = pathlib.Path(md_path).read_text(encoding='utf-8')
 
-# 変換処理
-html = md
-# テーブルヘッダー区切り行を除去
-html = re.sub(r'\|[-| ]+\|\n', '', html)
-# テーブル行をTRに変換
-def table_row(m):
-    cells = [c.strip() for c in m.group(1).split('|') if c.strip()]
-    tds = ''.join(f'<td>{c}</td>' for c in cells)
-    return f'<tr>{tds}</tr>\n'
-html = re.sub(r'\|(.+)\|\n', table_row, html)
-# テーブルをtableタグで囲む
-html = re.sub(r'(<tr>.*?</tr>\n)+', lambda m: f'<table border=\"1\">\n{m.group(0)}</table>\n', html, flags=re.DOTALL)
-# リンク
-html = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href=\"\2\">\1</a>', html)
-# 見出し
-html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
-html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
-html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
-# リスト
-html = re.sub(r'^- (.+)$', r'<li>\1</li>', html, flags=re.MULTILINE)
-html = re.sub(r'(<li>.*?</li>\n)+', lambda m: f'<ul>\n{m.group(0)}</ul>\n', html, flags=re.DOTALL)
-# 段落
-html = re.sub(r'\n\n+', '\n<br>\n', html)
+def parse_table_rows(text):
+    rows = []
+    for line in text.splitlines():
+        if line.startswith('|') and not re.match(r'\|[-| ]+\|', line):
+            cells = [c.strip() for c in line.strip('|').split('|')]
+            rows.append(cells)
+    return rows[1:] if rows else []
 
-full = f'''<!DOCTYPE html>
-<html lang=\"ja\"><head><meta charset=\"utf-8\">
-<style>body{{font-family:sans-serif;max-width:900px;margin:2em auto;line-height:1.6}}
-table{{border-collapse:collapse;width:100%}}td{{padding:6px 10px;border:1px solid #ccc;vertical-align:top}}
-h1,h2,h3{{color:#333}}a{{color:#0066cc}}</style></head>
-<body>{html}</body></html>'''
+def md_link(text):
+    return re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', text)
 
-pathlib.Path(html_path).write_text(full, encoding='utf-8')
+def badge(cat):
+    colors = {'AI開発':'#4f46e5','セキュリティ':'#dc2626','個人開発':'#16a34a',
+              'キャリア':'#d97706','テクノロジー':'#0891b2','ビジネス':'#7c3aed'}
+    color = next((c for k,c in colors.items() if k in cat), '#6b7280')
+    return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">{cat}</span>'
+
+s3 = re.search(r'## ★★★ 注目記事\n(.*?)(?=\n## )', md, re.DOTALL)
+s2 = re.search(r'## ★★ 気になる記事\n(.*?)(?=\n## )', md, re.DOTALL)
+s1 = re.search(r'## ★ その他\n(.*?)$', md, re.DOTALL)
+
+s3_html = ''.join(
+    f'<div class="card"><div class="card-title">{md_link(r[0])}</div>'
+    f'<div class="card-meta">{r[1]} &nbsp;{badge(r[2])}</div>'
+    f'<div class="card-comment">{r[3]}</div></div>'
+    for r in parse_table_rows(s3.group(1)) if len(r) >= 4
+) if s3 else ''
+
+s2_html = ''.join(
+    f'<li class="s2-item">{md_link(r[0])}<br>'
+    f'<span class="s2-meta">{r[1]} &nbsp;{badge(r[2])}</span></li>'
+    for r in parse_table_rows(s2.group(1)) if len(r) >= 3
+) if s2 else ''
+
+s1_html = ''.join(
+    f'<li>{md_link(line[2:])}</li>'
+    for line in (s1.group(1).strip().splitlines() if s1 else [])
+    if line.strip().startswith('- ')
+)
+
+html = f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>トレンドニュース {DATE_FMT}</title>
+<style>
+  *{{box-sizing:border-box;margin:0;padding:0}}
+  body{{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f4f6;color:#1f2937;padding:1em;line-height:1.6}}
+  h1{{font-size:1.2em;color:#111827;margin:.5em 0 1em;padding-bottom:.4em;border-bottom:2px solid #4f46e5}}
+  h2{{font-size:1em;margin:1.5em 0 .75em;color:#374151}}
+  a{{color:#4f46e5;text-decoration:none}}
+  a:hover{{text-decoration:underline}}
+  .card{{background:#fff;border-radius:12px;padding:1em;margin-bottom:.75em;box-shadow:0 1px 3px rgba(0,0,0,.1)}}
+  .card-title{{font-size:1em;font-weight:bold;margin-bottom:.4em}}
+  .card-meta{{font-size:.8em;color:#6b7280;margin-bottom:.5em}}
+  .card-comment{{font-size:.875em;color:#374151}}
+  .s2-list{{list-style:none;padding:0}}
+  .s2-item{{background:#fff;border-radius:8px;padding:.75em 1em;margin-bottom:.5em;font-size:.9em;box-shadow:0 1px 2px rgba(0,0,0,.06)}}
+  .s2-meta{{font-size:.75em;color:#9ca3af}}
+  .s1-list{{list-style:none;padding:0}}
+  .s1-list li{{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}}
+</style>
+</head>
+<body>
+<h1>📰 トレンドニュース {DATE_FMT}</h1>
+<h2>★★★ 注目記事</h2>
+{s3_html}
+<h2>★★ 気になる記事</h2>
+<ul class="s2-list">{s2_html}</ul>
+<h2>★ その他</h2>
+<ul class="s1-list">{s1_html}</ul>
+</body></html>"""
+
+pathlib.Path(html_path).write_text(html, encoding='utf-8')
 print('HTML saved:', html_path)
-"
+PYEOF
 ```
 
 ### ステップ6: Discord通知

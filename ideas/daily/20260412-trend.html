@@ -1,67 +1,165 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8">
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>トレンドニュース 2026-04-12</title>
 <style>
-body{font-family:sans-serif;max-width:960px;margin:2em auto;line-height:1.7;color:#222;padding:0 1em}
-table{border-collapse:collapse;width:100%;margin:1em 0}
-td{padding:8px 12px;border:1px solid #ddd;vertical-align:top}
-tr:nth-child(even){background:#f9f9f9}
-h1{color:#1a1a2e;border-bottom:2px solid #444;padding-bottom:.3em}
-h2{color:#333;margin-top:2em}
-a{color:#0066cc}
-ul{padding-left:1.5em}
-li{margin:.3em 0}
-</style></head>
-<body><h1>トレンドニュース 2026-04-12</h1>
-<br>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f3f4f6;
+    color: #1f2937;
+    padding: 1em;
+    line-height: 1.6;
+  }
+  h1 {
+    font-size: 1.2em;
+    color: #111827;
+    margin: .5em 0 1em;
+    padding-bottom: .4em;
+    border-bottom: 2px solid #4f46e5;
+  }
+  h2 {
+    font-size: 1em;
+    margin: 1.5em 0 .75em;
+    color: #374151;
+  }
+  a { color: #4f46e5; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ★★★ カード */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1em;
+    margin-bottom: .75em;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  }
+  .card-title { font-size: 1em; font-weight: bold; margin-bottom: .4em; }
+  .card-meta { font-size: .8em; color: #6b7280; margin-bottom: .5em; }
+  .card-comment { font-size: .875em; color: #374151; }
+
+  /* ★★ リスト */
+  .s2-list { list-style: none; padding: 0; }
+  .s2-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: .75em 1em;
+    margin-bottom: .5em;
+    font-size: .9em;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
+  .s2-meta { font-size: .75em; color: #9ca3af; }
+
+  /* ★ リスト */
+  .s1-list { list-style: none; padding: 0; }
+  .s1-list li {
+    padding: .4em 0;
+    font-size: .85em;
+    border-bottom: 1px solid #e5e7eb;
+    color: #6b7280;
+  }
+</style>
+</head>
+<body>
+<h1>📰 トレンドニュース 2026-04-12</h1>
+
 <h2>★★★ 注目記事</h2>
-<br>
-<table>
-<tr><td>タイトル</td><td>ソース</td><td>カテゴリ</td><td>コメント</td></tr>
-<tr><td><a href="https://zenn.dev/mikana0918/articles/7ad57493a04f88">Claudeトークン消費を抑えて５倍使う: 「原始人」口調が80%削減</a></td><td>はてブ(636)</td><td>AI開発</td><td>プロンプトを原始人口調にするだけでトークンを80%削減できるという驚きのテクニック。Claude Codeヘビーユーザー必読</td></tr>
-<tr><td><a href="https://qiita.com/Akira-Isegawa/items/00f23d206c504db2ac3b">エンジニア歴20年の私が、素人バイブコーディング勢に物申す</a></td><td>はてブ(546)</td><td>AI開発/キャリア</td><td>バイブコーディングブームへの経験者視点の批評。AI時代のエンジニアリング論として重要</td></tr>
-<tr><td><a href="https://news.ycombinator.com/item?id=47733217">How We Broke Top AI Agent Benchmarks: And What Comes Next</a></td><td>HN</td><td>AI開発</td><td>AIエージェントのベンチマーク操作問題を実証した研究。評価指標の信頼性に関する重要な警鐘</td></tr>
-<tr><td><a href="https://www.reddit.com/r/webdev/comments/1sin68g/i_audited_6_months_of_prs_after_my_team_went/">I audited 6 months of PRs after my team went all-in on AI code generation. The code got worse in ways none of us predicted.</a></td><td>Reddit(1131)</td><td>AI開発/キャリア</td><td>AIコード生成の6ヶ月実運用監査。コードの均質化・抽象化過多など予測外の劣化パターンが詳細に報告。AIとの付き合い方を考えさせられる必読記事</td></tr>
-<tr><td><a href="https://qiita.com/miruky/items/fcab851c5351f79b481d">【必須】GitHubとnpmで脆弱なパッケージを入れないための防御設定 8選</a></td><td>はてブ(158)</td><td>セキュリティ</td><td>サプライチェーン攻撃対策として今すぐ設定できる防御策8選。具体的で即実践できる</td></tr>
-<tr><td><a href="https://blog.calif.io/p/claude-humans-vs-nginx-cve-2026-27654">Claude + Humans vs nginx: CVE-2026-27654</a></td><td>Reddit(netsec)</td><td>AI開発/セキュリティ</td><td>ClaudeとヒューマンがコラボしてnginxのCVEを発見した事例。AI支援セキュリティリサーチの最前線</td></tr>
-<tr><td><a href="https://kotaku.com/rockstar-games-reportedly-hacked-massive-data-leak-ransom-gta-6-shinyhunters-2000686858">Rockstar Games confirms it was hacked by ShinyHunters — ransom deadline April 14</a></td><td>Reddit(5816)</td><td>セキュリティ</td><td>GTA開発元のRockstar Gamesがランサム攻撃。4/14期限、GTA6情報漏洩リスクあり</td></tr>
-<tr><td><a href="https://arstechnica.com/tech-policy/2026/04/trump-admin-hounds-reddit-to-reveal-identity-of-user-who-criticized-ice/">US demands Reddit unmask ICE critic, summons firm to grand jury</a></td><td>Reddit(16484)</td><td>テクノロジー企業動向</td><td>トランプ政権がRedditにユーザー特定を要求。プラットフォームのプライバシーと政府圧力の最前線</td></tr>
-<tr><td><a href="https://news.ycombinator.com/item?id=47730194">Cirrus Labs to join OpenAI</a></td><td>HN</td><td>テクノロジー企業動向</td><td>CI/CDインフラのCirrus LabsがOpenAIへ参加。OpenAIのインフラ強化の動き</td></tr>
-<tr><td><a href="https://zenn.dev/tsubotax/articles/7f0d3693f70e2f">DESIGN.md + 壊れたら気づくハーネス — AI向けデザインシステムを「維持できる仕組み」にした記録</a></td><td>はてブ(116)</td><td>AI開発</td><td>AIエージェント向けデザインシステムの維持管理手法。DESIGN.mdという新概念の実践事例</td></tr>
-<tr><td><a href="https://zenn.dev/dely_jp/articles/b8da42a57bbc39">Claude Code + Obsidian</a></td><td>はてブ(181)</td><td>AI開発</td><td>Claude CodeとObsidianを連携させる実践事例。ナレッジ管理とAI開発の統合として注目</td></tr>
-<tr><td><a href="https://songmu.jp/riji/entry/2026-04-11-ai-agent-inside-the-fence.html">fence - AI AgentをOSサンドボックスの中で動かす</a></td><td>はてブ(57)</td><td>AI開発</td><td>AIエージェントをOSレベルのサンドボックスで安全に実行するツール。セキュリティ観点でも重要</td></tr>
-<tr><td><a href="https://gigazine.net/news/20260411-cpuid-flagged-for-malware/">「CPU-Z」と「HWMonitor」にマルウェアが混入</a></td><td>はてブ(31)</td><td>セキュリティ</td><td>信頼性の高い定番ツールにマルウェア混入。サプライチェーン攻撃の実例として要注意</td></tr>
-</table>
-<br>
+
+<div class="card">
+  <div class="card-title"><a href="https://zenn.dev/mikana0918/articles/7ad57493a04f88">Claudeトークン消費を抑えて５倍使う: 「原始人」口調が80%削減</a></div>
+  <div class="card-meta">はてブ(636) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div>
+  <div class="card-comment">プロンプトを原始人口調にするだけでトークンを80%削減できるという驚きのテクニック。Claude Codeヘビーユーザー必読</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://qiita.com/Akira-Isegawa/items/00f23d206c504db2ac3b">エンジニア歴20年の私が、素人バイブコーディング勢に物申す</a></div>
+  <div class="card-meta">はてブ(546) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/キャリア</span></div>
+  <div class="card-comment">バイブコーディングブームへの経験者視点の批評。AI時代のエンジニアリング論として重要</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://news.ycombinator.com/item?id=47733217">How We Broke Top AI Agent Benchmarks: And What Comes Next</a></div>
+  <div class="card-meta">HN &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div>
+  <div class="card-comment">AIエージェントのベンチマーク操作問題を実証した研究。評価指標の信頼性に関する重要な警鐘</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://www.reddit.com/r/webdev/comments/1sin68g/i_audited_6_months_of_prs_after_my_team_went/">I audited 6 months of PRs after my team went all-in on AI code generation. The code got worse in ways none of us predicted.</a></div>
+  <div class="card-meta">Reddit(1131) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/キャリア</span></div>
+  <div class="card-comment">AIコード生成の6ヶ月実運用監査。コードの均質化・抽象化過多など予測外の劣化パターンが詳細に報告。AIとの付き合い方を考えさせられる必読記事</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://qiita.com/miruky/items/fcab851c5351f79b481d">【必須】GitHubとnpmで脆弱なパッケージを入れないための防御設定 8選</a></div>
+  <div class="card-meta">はてブ(158) &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div>
+  <div class="card-comment">サプライチェーン攻撃対策として今すぐ設定できる防御策8選。具体的で即実践できる</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://blog.calif.io/p/claude-humans-vs-nginx-cve-2026-27654">Claude + Humans vs nginx: CVE-2026-27654</a></div>
+  <div class="card-meta">Reddit(netsec) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/セキュリティ</span></div>
+  <div class="card-comment">ClaudeとヒューマンがコラボしてnginxのCVEを発見した事例。AI支援セキュリティリサーチの最前線</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://kotaku.com/rockstar-games-reportedly-hacked-massive-data-leak-ransom-gta-6-shinyhunters-2000686858">Rockstar Games confirms it was hacked by ShinyHunters — ransom deadline April 14</a></div>
+  <div class="card-meta">Reddit(5816) &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div>
+  <div class="card-comment">GTA開発元のRockstar Gamesがランサム攻撃。4/14期限、GTA6情報漏洩リスクあり</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://arstechnica.com/tech-policy/2026/04/trump-admin-hounds-reddit-to-reveal-identity-of-user-who-criticized-ice/">US demands Reddit unmask ICE critic, summons firm to grand jury</a></div>
+  <div class="card-meta">Reddit(16484) &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業動向</span></div>
+  <div class="card-comment">トランプ政権がRedditにユーザー特定を要求。プラットフォームのプライバシーと政府圧力の最前線</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://news.ycombinator.com/item?id=47730194">Cirrus Labs to join OpenAI</a></div>
+  <div class="card-meta">HN &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業動向</span></div>
+  <div class="card-comment">CI/CDインフラのCirrus LabsがOpenAIへ参加。OpenAIのインフラ強化の動き</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://zenn.dev/tsubotax/articles/7f0d3693f70e2f">DESIGN.md + 壊れたら気づくハーネス — AI向けデザインシステムを「維持できる仕組み」にした記録</a></div>
+  <div class="card-meta">はてブ(116) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div>
+  <div class="card-comment">AIエージェント向けデザインシステムの維持管理手法。DESIGN.mdという新概念の実践事例</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://zenn.dev/dely_jp/articles/b8da42a57bbc39">Claude Code + Obsidian</a></div>
+  <div class="card-meta">はてブ(181) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div>
+  <div class="card-comment">Claude CodeとObsidianを連携させる実践事例。ナレッジ管理とAI開発の統合として注目</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://songmu.jp/riji/entry/2026-04-11-ai-agent-inside-the-fence.html">fence - AI AgentをOSサンドボックスの中で動かす</a></div>
+  <div class="card-meta">はてブ(57) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div>
+  <div class="card-comment">AIエージェントをOSレベルのサンドボックスで安全に実行するツール。セキュリティ観点でも重要</div>
+</div>
+<div class="card">
+  <div class="card-title"><a href="https://gigazine.net/news/20260411-cpuid-flagged-for-malware/">「CPU-Z」と「HWMonitor」にマルウェアが混入</a></div>
+  <div class="card-meta">はてブ(31) &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div>
+  <div class="card-comment">信頼性の高い定番ツールにマルウェア混入。サプライチェーン攻撃の実例として要注意</div>
+</div>
+
 <h2>★★ 気になる記事</h2>
-<br>
-<table>
-<tr><td>タイトル</td><td>ソース</td><td>カテゴリ</td></tr>
-<tr><td><a href="https://zenn.dev/nttdata_tech/articles/694e39ceff58b7">ベクトル検索は不要なのか</a></td><td>はてブ(102)</td><td>AI開発</td></tr>
-<tr><td><a href="https://note.com/hatakejp/n/naae38195e8d8">認知科学でAI秘書の記憶を再設計したら別人になった話</a></td><td>はてブ(42)</td><td>AI開発</td></tr>
-<tr><td><a href="https://qiita.com/akira_papa_AI/items/d46a6629b1aae835491d">「ドキュメント書いて」はもう古い。AIに4種類のドキュメントを「コードから自動生成」させる</a></td><td>はてブ(42)</td><td>AI開発</td></tr>
-<tr><td><a href="https://news.ycombinator.com/item?id=47732020">Small models also found the vulnerabilities that Mythos found</a></td><td>HN</td><td>AI開発/セキュリティ</td></tr>
-<tr><td><a href="https://zenn.dev/headwaters/articles/953017b188a710">自己評価をGitHub Copilotで半自動化したら、忘れていた貢献まで掘り起こされた</a></td><td>はてブ(37)</td><td>AI開発/キャリア</td></tr>
-<tr><td><a href="https://zenn.dev/pepabo/articles/claude-code-failure-learning-loop">Claude Codeに同じレビュー指摘を繰り返させない失敗学習ループの作り方</a></td><td>はてブ(8)</td><td>AI開発</td></tr>
-<tr><td><a href="https://azukiazusa.dev/blog/claude-advisor-tool/">Claude の Advisor tool を活用して性能とコストのバランスを最適化する</a></td><td>はてブ(24)</td><td>AI開発</td></tr>
-<tr><td><a href="https://www.reddit.com/r/MachineLearning/comments/1siqg5d/is_live_ai_video_generation_a_meaningful/">Is "live AI video generation" a meaningful technical category or just a marketing term?</a></td><td>Reddit(119)</td><td>AI開発</td></tr>
-<tr><td><a href="https://www.reddit.com/r/artificial/comments/1siypay/spent_today_at_mits_open_agentic_web_conference/">Spent today at MIT's Open Agentic Web conference. Six things worth thinking about.</a></td><td>Reddit(39)</td><td>AI開発</td></tr>
-<tr><td><a href="https://getdesign.md/">getdesign.md — DESIGN.md Collection for AI Agents</a></td><td>はてブ(33)</td><td>AI開発</td></tr>
-<tr><td><a href="https://www.reddit.com/r/ExperiencedDevs/comments/1siww3r/do_you_guys_think_qa_is_a_dying_field/">Do you guys think QA is a dying field?</a></td><td>Reddit(126)</td><td>キャリア/転職</td></tr>
-<tr><td><a href="https://www.reddit.com/r/cscareerquestions/comments/1sih21i/why_do_recruiters_keep_asking_me_why_i_left_my/">Why do recruiters keep asking me why I left my old job?</a></td><td>Reddit(318)</td><td>キャリア/転職</td></tr>
-<tr><td><a href="https://www.reddit.com/r/SideProject/comments/1sj4zr9/i_spent_3_months_building_a_habit_app_based_on/">I spent 3 months building a habit app based on Atomic Habits. Apple approved it yesterday.</a></td><td>Reddit(SideProject)</td><td>個人開発</td></tr>
-<tr><td><a href="https://v.redd.it/s0fezt401lug1">I built a free tool to turn boring barcodes into artistic, scannable SVG art.</a></td><td>Reddit(256)</td><td>個人開発</td></tr>
-<tr><td><a href="https://husseinmuhaisen.com/blog/reverse-engineering-teampcp-telnyx-file-format-chain/">Reverse Engineering a Multi Stage File Format Steganography Chain (TeamPCP Telnyx Campaign)</a></td><td>Reddit(netsec)</td><td>セキュリティ</td></tr>
-<tr><td><a href="https://www.sbbit.jp/article/cont1/184157">【神アプデ】Geminiに、NotebookLMが統合「Notebooks」が利用可能に</a></td><td>はてブ(92)</td><td>AI開発/テクノロジー企業</td></tr>
-<tr><td><a href="https://www.sbbit.jp/article/fj/184257">グーグル、Gemini搭載の新生「Google Finance」を日本でも提供開始</a></td><td>はてブ(103)</td><td>テクノロジー企業動向</td></tr>
-<tr><td><a href="https://speakerdeck.com/nwiizo/akitekutiyamodanaizesiyontohahe-ka">アーキテクチャモダナイゼーションとは何か</a></td><td>はてブ(118)</td><td>ビジネス動向</td></tr>
-<tr><td><a href="https://pc.watch.impress.co.jp/docs/news/yajiuma/2100881.html">【ブラウザ内でAI処理が完結】WebGPU・WebAssemblyでローカルLLMをブラウザで動かす</a></td><td>はてブ(140)</td><td>AI開発</td></tr>
-<tr><td><a href="https://gigazine.net/news/20260411-lemonade/">無料でローカルAI環境を簡単に導入「Lemonade」</a></td><td>はてブ(45)</td><td>AI開発</td></tr>
-<tr><td><a href="https://blog.inorinrinrin.com/entry/2026/04/11/204253">Claude Code 2.1.101 で追加された `/team-onboarding` コマンド</a></td><td>はてブ(36)</td><td>AI開発</td></tr>
-</table>
-<br>
+<ul class="s2-list">
+<li class="s2-item"><a href="https://zenn.dev/nttdata_tech/articles/694e39ceff58b7">ベクトル検索は不要なのか</a><br><span class="s2-meta">はてブ(102) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://note.com/hatakejp/n/naae38195e8d8">認知科学でAI秘書の記憶を再設計したら別人になった話</a><br><span class="s2-meta">はてブ(42) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://qiita.com/akira_papa_AI/items/d46a6629b1aae835491d">「ドキュメント書いて」はもう古い。AIに4種類のドキュメントを「コードから自動生成」させる</a><br><span class="s2-meta">はてブ(42) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://news.ycombinator.com/item?id=47732020">Small models also found the vulnerabilities that Mythos found</a><br><span class="s2-meta">HN &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/セキュリティ</span></span></li>
+<li class="s2-item"><a href="https://zenn.dev/headwaters/articles/953017b188a710">自己評価をGitHub Copilotで半自動化したら、忘れていた貢献まで掘り起こされた</a><br><span class="s2-meta">はてブ(37) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/キャリア</span></span></li>
+<li class="s2-item"><a href="https://zenn.dev/pepabo/articles/claude-code-failure-learning-loop">Claude Codeに同じレビュー指摘を繰り返させない失敗学習ループの作り方</a><br><span class="s2-meta">はてブ(8) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://azukiazusa.dev/blog/claude-advisor-tool/">Claude の Advisor tool を活用して性能とコストのバランスを最適化する</a><br><span class="s2-meta">はてブ(24) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://www.reddit.com/r/MachineLearning/comments/1siqg5d/is_live_ai_video_generation_a_meaningful/">Is "live AI video generation" a meaningful technical category or just a marketing term?</a><br><span class="s2-meta">Reddit(119) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://www.reddit.com/r/artificial/comments/1siypay/spent_today_at_mits_open_agentic_web_conference/">Spent today at MIT's Open Agentic Web conference. Six things worth thinking about.</a><br><span class="s2-meta">Reddit(39) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://getdesign.md/">getdesign.md — DESIGN.md Collection for AI Agents</a><br><span class="s2-meta">はてブ(33) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://www.reddit.com/r/ExperiencedDevs/comments/1siww3r/do_you_guys_think_qa_is_a_dying_field/">Do you guys think QA is a dying field?</a><br><span class="s2-meta">Reddit(126) &nbsp;<span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">キャリア/転職</span></span></li>
+<li class="s2-item"><a href="https://www.reddit.com/r/cscareerquestions/comments/1sih21i/why_do_recruiters_keep_asking_me_why_i_left_my/">Why do recruiters keep asking me why I left my old job?</a><br><span class="s2-meta">Reddit(318) &nbsp;<span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">キャリア/転職</span></span></li>
+<li class="s2-item"><a href="https://www.reddit.com/r/SideProject/comments/1sj4zr9/i_spent_3_months_building_a_habit_app_based_on/">I spent 3 months building a habit app based on Atomic Habits. Apple approved it yesterday.</a><br><span class="s2-meta">Reddit(SideProject) &nbsp;<span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">個人開発</span></span></li>
+<li class="s2-item"><a href="https://v.redd.it/s0fezt401lug1">I built a free tool to turn boring barcodes into artistic, scannable SVG art.</a><br><span class="s2-meta">Reddit(256) &nbsp;<span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">個人開発</span></span></li>
+<li class="s2-item"><a href="https://husseinmuhaisen.com/blog/reverse-engineering-teampcp-telnyx-file-format-chain/">Reverse Engineering a Multi Stage File Format Steganography Chain (TeamPCP Telnyx Campaign)</a><br><span class="s2-meta">Reddit(netsec) &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></span></li>
+<li class="s2-item"><a href="https://www.sbbit.jp/article/cont1/184157">【神アプデ】Geminiに、NotebookLMが統合「Notebooks」が利用可能に</a><br><span class="s2-meta">はてブ(92) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発/テクノロジー企業</span></span></li>
+<li class="s2-item"><a href="https://www.sbbit.jp/article/fj/184257">グーグル、Gemini搭載の新生「Google Finance」を日本でも提供開始</a><br><span class="s2-meta">はてブ(103) &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業動向</span></span></li>
+<li class="s2-item"><a href="https://speakerdeck.com/nwiizo/akitekutiyamodanaizesiyontohahe-ka">アーキテクチャモダナイゼーションとは何か</a><br><span class="s2-meta">はてブ(118) &nbsp;<span style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">ビジネス動向</span></span></li>
+<li class="s2-item"><a href="https://pc.watch.impress.co.jp/docs/news/yajiuma/2100881.html">【ブラウザ内でAI処理が完結】WebGPU・WebAssemblyでローカルLLMをブラウザで動かす</a><br><span class="s2-meta">はてブ(140) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://gigazine.net/news/20260411-lemonade/">無料でローカルAI環境を簡単に導入「Lemonade」</a><br><span class="s2-meta">はてブ(45) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+<li class="s2-item"><a href="https://blog.inorinrinrin.com/entry/2026/04/11/204253">Claude Code 2.1.101 で追加された `/team-onboarding` コマンド</a><br><span class="s2-meta">はてブ(36) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li>
+</ul>
+
 <h2>★ その他</h2>
-<br>
-<ul>
+<ul class="s1-list">
 <li><a href="https://qiita.com/teppei19980914/items/36404f9ec9c786cde671">マークダウン記法は奥深く、楽しい</a> — はてブ(186)</li>
 <li><a href="https://zenn.dev/oukayuka/books/353ad112b88613">Jujutsu はなぜ AI 時代に急に評価され始めたのか</a> — はてブ(23)</li>
 <li><a href="https://wtrclred.io/ja/posts/09">ReactはUI = f(State)であるか？</a> — はてブ(22)</li>
@@ -75,4 +173,6 @@ li{margin:.3em 0}
 <li><a href="https://www.neowin.net/news/microsoft-confirms-windows-11-kb5077212-kb5079420-break-pc-reset-on-25h2-and-24h2-systems/">Microsoft confirms Windows 11 KB5077212/KB5079420 break PC reset</a> — Reddit(2552)</li>
 <li><a href="https://news.ycombinator.com/item?id=47733561">447 TB/cm² at zero retention energy – atomic-scale memory on fluorographane</a> — HN</li>
 </ul>
-</body></html>
+
+</body>
+</html>
