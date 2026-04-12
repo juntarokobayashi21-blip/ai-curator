@@ -1,0 +1,54 @@
+name: Daily Trend Collection
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎朝 9:00 JST (= 0:00 UTC)
+  workflow_dispatch:       # Actions タブから手動実行も可能
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create .env
+        run: echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" > .env
+
+      - name: Run collect skill
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          TODAY=$(date +%Y-%m-%d)
+          claude -p "今日の日付は ${TODAY} です。以下のスキル定義に従ってニュース収集を実行してください。
+
+          $(cat collect-SKILL.md)" \
+            --allowedTools "Bash,WebFetch,Read,Write,Edit" \
+            --model claude-sonnet-4-6 \
+            2>&1 | tee /tmp/collect.log
+          echo "--- collect done ---"
+
+      - name: Commit and push results
+        run: |
+          git config user.name "ai-curator-bot"
+          git config user.email "ai-curator-bot@users.noreply.github.com"
+          git add ideas/daily/
+          git diff --staged --quiet && echo "No changes" || \
+            git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push
