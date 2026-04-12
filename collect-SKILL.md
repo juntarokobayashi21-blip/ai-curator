@@ -64,32 +64,103 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
 - [タイトル](URL) — ソース
 ```
 
-### ステップ5: Discord通知
+### ステップ5: HTMLファイル生成
 
-保存完了後、以下のBashコマンドでDiscordに通知を送る：
+`.md` ファイルと同じ内容を `ideas/daily/YYYYMMDD-trend.html` にも保存する。
+
+以下のPythonコマンドで変換する：
+```bash
+python3 -c "
+import re, pathlib
+
+md_path = 'ideas/daily/YYYYMMDDtrend.md'  # 実際の日付に置換
+html_path = md_path.replace('.md', '.html')
+
+md = pathlib.Path(md_path).read_text(encoding='utf-8')
+
+# 変換処理
+html = md
+# テーブルヘッダー区切り行を除去
+html = re.sub(r'\|[-| ]+\|\n', '', html)
+# テーブル行をTRに変換
+def table_row(m):
+    cells = [c.strip() for c in m.group(1).split('|') if c.strip()]
+    tds = ''.join(f'<td>{c}</td>' for c in cells)
+    return f'<tr>{tds}</tr>\n'
+html = re.sub(r'\|(.+)\|\n', table_row, html)
+# テーブルをtableタグで囲む
+html = re.sub(r'(<tr>.*?</tr>\n)+', lambda m: f'<table border=\"1\">\n{m.group(0)}</table>\n', html, flags=re.DOTALL)
+# リンク
+html = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href=\"\2\">\1</a>', html)
+# 見出し
+html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+# リスト
+html = re.sub(r'^- (.+)$', r'<li>\1</li>', html, flags=re.MULTILINE)
+html = re.sub(r'(<li>.*?</li>\n)+', lambda m: f'<ul>\n{m.group(0)}</ul>\n', html, flags=re.DOTALL)
+# 段落
+html = re.sub(r'\n\n+', '\n<br>\n', html)
+
+full = f'''<!DOCTYPE html>
+<html lang=\"ja\"><head><meta charset=\"utf-8\">
+<style>body{{font-family:sans-serif;max-width:900px;margin:2em auto;line-height:1.6}}
+table{{border-collapse:collapse;width:100%}}td{{padding:6px 10px;border:1px solid #ccc;vertical-align:top}}
+h1,h2,h3{{color:#333}}a{{color:#0066cc}}</style></head>
+<body>{html}</body></html>'''
+
+pathlib.Path(html_path).write_text(full, encoding='utf-8')
+print('HTML saved:', html_path)
+"
+```
+
+### ステップ6: Discord通知
+
+保存完了後、以下のPythonコマンドでDiscordに `.md` と `.html` の両ファイルを添付して通知を送る：
 
 ```bash
-curl -s -X POST "$DISCORD_WEBHOOK_URL" \
-  -H "Content-Type: application/json" \
-  -d "{\"content\": \"MESSAGE\"}"
-```
+python3 -c "
+import json, subprocess, os, pathlib
 
-通知メッセージの内容（JSON文字列として組み立てる）：
-```
-**【AIキュレーター】YYYY-MM-DD トレンドニュース**
-★★★ 注目記事 N件
+# .envから読み込み
+try:
+    for line in pathlib.Path('.env').read_text().splitlines():
+        if '=' in line and not line.startswith('#'):
+            k, v = line.split('=', 1)
+            os.environ.setdefault(k.strip(), v.strip())
+except: pass
 
-▶ タイトル1
-▶ タイトル2
-...（★★★の記事をすべてリスト）
+webhook = os.environ.get('DISCORD_WEBHOOK_URL', '')
+if not webhook:
+    print('DISCORD_WEBHOOK_URL not set, skipping')
+    exit()
 
-📄 ideas/daily/YYYYMMDD-trend.md
+date = 'YYYYMMDD'  # 実際の日付に置換
+md_path   = f'ideas/daily/{date}-trend.md'
+html_path = f'ideas/daily/{date}-trend.html'
+
+msg = (
+    '**【AIキュレーター】YYYY-MM-DD トレンドニュース**\n'
+    '★★★ 注目記事 N件\n\n'
+    '▶ タイトル1\n'
+    '▶ タイトル2\n\n'
+    f'📄 {md_path}'
+)
+
+result = subprocess.run([
+    'curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+    '-X', 'POST', webhook,
+    '-F', f'payload_json={json.dumps({\"content\": msg})}',
+    '-F', f'file1=@{md_path}',
+    '-F', f'file2=@{html_path}',
+], capture_output=True, text=True)
+print('HTTP:', result.stdout)
+"
 ```
 
 注意事項：
 - `DISCORD_WEBHOOK_URL` 環境変数が未設定の場合はスキップしてよい
-- メッセージ内の `"` はエスケープ（`\"`）する
-- 改行は `\n` で表現する
+- ファイル添付には `multipart/form-data`（`-F` オプション）を使うこと（`-d` では添付不可）
 - メッセージが2000文字を超える場合は★★★のタイトルのみに絞る
 
 ### 完了メッセージ
