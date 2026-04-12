@@ -103,15 +103,71 @@ def fetch_reddit():
             print(f'  [WARN] Reddit/{sub}: {e}')
     return out
 
+# ─── Keyword fallback ─────────────────────────────────────────────────────────
+
+KEYWORDS = {
+    'AI開発': {
+        'high': ['LLM','llm','AI','人工知能','GPT','Claude','Gemini','agent','エージェント',
+                 'プロンプト','RAG','機械学習','deep learning','transformer','OpenAI','Anthropic',
+                 'コーディング','vibe coding','バイブコーディング','Claude Code','Copilot'],
+        'mid':  ['モデル','推論','ファインチューニング','embedding','生成AI','自動化'],
+    },
+    'セキュリティ': {
+        'high': ['CVE','脆弱性','マルウェア','ransomware','ランサム','hack','hacked','breach',
+                 'exploit','zero-day','ゼロデイ','インシデント','セキュリティ','phishing'],
+        'mid':  ['認証','暗号','パスワード','WAF','firewall','SIEM','SOC'],
+    },
+    '個人開発': {
+        'high': ['SaaS','indie hacker','個人開発','副業','収益化','ノーコード','no-code',
+                 'side project','個人事業','フリーランス'],
+        'mid':  ['スタートアップ','起業','プロダクト','launch'],
+    },
+    '自動運転': {
+        'high': ['自動運転','Tesla','Waymo','EV','電気自動車','autonomous','自動車'],
+        'mid':  ['LIDAR','センサー','車載'],
+    },
+    'キャリア/転職': {
+        'high': ['転職','給与','年収','salary','採用','リモートワーク','エンジニア市場',
+                 'career','job','layoff','レイオフ','解雇','QA','エンジニア'],
+        'mid':  ['働き方','スキル','評価','昇給'],
+    },
+    'テクノロジー企業': {
+        'high': ['Google','Apple','Microsoft','Amazon','Meta','OpenAI','NVIDIA','Anthropic',
+                 'スタートアップ','買収','M&A','資金調達','IPO'],
+        'mid':  ['Big Tech','GAFAM','決算'],
+    },
+    'ビジネス動向': {
+        'high': ['DX','デジタル変革','新規事業','市場','ビジネス','経営','戦略'],
+        'mid':  ['業界','トレンド','導入事例'],
+    },
+}
+
+def keyword_evaluate(articles):
+    """キーワードマッチでフォールバック分類"""
+    results = []
+    for i, a in enumerate(articles):
+        text = a['title']
+        best_cat, best_score = '', 0
+        for cat, kw in KEYWORDS.items():
+            score = sum(3 for k in kw['high'] if k.lower() in text.lower())
+            score += sum(1 for k in kw['mid'] if k.lower() in text.lower())
+            if score > best_score:
+                best_score, best_cat = score, cat
+        if best_score >= 3:
+            results.append({'index': i+1, 'rating': '★★★', 'category': best_cat, 'comment': ''})
+        elif best_score >= 1:
+            results.append({'index': i+1, 'rating': '★★', 'category': best_cat})
+    return results
+
 # ─── AI Evaluation ────────────────────────────────────────────────────────────
 
-def evaluate(articles):
+def evaluate_ai(articles):
+    """GitHub Models (gpt-4o-mini) で評価。失敗時は None を返す"""
     if not GITHUB_TOKEN:
-        print('[WARN] GITHUB_TOKEN not set, skipping AI evaluation')
-        return []
+        print('[INFO] GITHUB_TOKEN not set')
+        return None
 
     numbered = '\n'.join(f'{i+1}. [{a["source"]}] {a["title"]}' for i, a in enumerate(articles))
-
     prompt = f"""以下は今日収集したニュース記事の一覧です。
 以下の興味領域に基づいて各記事を評価してください。
 
@@ -158,12 +214,24 @@ def evaluate(articles):
         with urllib.request.urlopen(req, timeout=60) as r:
             result = json.loads(r.read())
             content = result['choices'][0]['message']['content']
+            print(f'[AI] response length: {len(content)}')
             m = re.search(r'\[.*\]', content, re.DOTALL)
             if m:
                 return json.loads(m.group())
     except Exception as e:
-        print(f'[WARN] AI evaluation: {e}')
-    return []
+        print(f'[WARN] GitHub Models failed: {e}')
+    return None
+
+def evaluate(articles):
+    """AI評価を試み、失敗したらキーワードフォールバック"""
+    result = evaluate_ai(articles)
+    if result is not None and len(result) > 0:
+        print(f'[INFO] AI evaluated: {len(result)} articles')
+        return result
+    print('[INFO] Falling back to keyword evaluation')
+    result = keyword_evaluate(articles)
+    print(f'[INFO] Keyword evaluated: {len(result)} articles')
+    return result
 
 # ─── HTML ─────────────────────────────────────────────────────────────────────
 
