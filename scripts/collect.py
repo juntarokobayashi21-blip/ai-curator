@@ -153,10 +153,12 @@ def keyword_evaluate(articles):
             score += sum(1 for k in kw['mid'] if k.lower() in text.lower())
             if score > best_score:
                 best_score, best_cat = score, cat
-        if best_score >= 3:
+        if best_score >= 6:   # 高キーワード2個以上
             results.append({'index': i+1, 'rating': '★★★', 'category': best_cat, 'comment': ''})
-        elif best_score >= 1:
+        elif best_score >= 3:  # 高キーワード1個
             results.append({'index': i+1, 'rating': '★★', 'category': best_cat})
+        elif best_score >= 1:  # 中キーワードのみ
+            results.append({'index': i+1, 'rating': '★', 'category': best_cat})
     return results
 
 # ─── AI Evaluation ────────────────────────────────────────────────────────────
@@ -337,10 +339,18 @@ def main():
     # Discord
     if DISCORD_WEBHOOK:
         html_url = f'{GITHUB_PAGES_BASE}/ideas/daily/{DATE}-trend.html'
-        msg = (f'**【AIキュレーター】{TODAY} トレンドニュース**\n'
-               f'★★★ 注目記事 {len(s3)}件\n\n'
-               + ''.join(f'▶ {a["title"]}\n' for a in s3)
-               + f'\n🌐 {html_url}\n📄 {MD_PATH}')
+        header = (f'**【AIキュレーター】{TODAY} トレンドニュース**\n'
+                  f'★★★ 注目記事 {len(s3)}件\n\n')
+        footer = f'\n🌐 {html_url}\n📄 {MD_PATH}'
+        # 2000文字上限に収まるよう記事リストを絞る
+        items = ''
+        for a in s3:
+            line = f'▶ {a["title"]}\n'
+            if len(header) + len(items) + len(line) + len(footer) > 1900:
+                items += f'…他{len(s3) - items.count("▶")}件\n'
+                break
+            items += line
+        msg = header + items + footer
         r = subprocess.run([
             'curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
             '-X', 'POST', DISCORD_WEBHOOK,
