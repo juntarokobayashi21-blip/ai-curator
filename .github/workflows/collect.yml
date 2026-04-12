@@ -16,34 +16,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Create .env
-        run: echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" > .env
-
-      - name: Run collect skill
+      - name: Run collect script
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          TODAY=$(date +%Y-%m-%d)
-          claude -p "今日の日付は ${TODAY} です。以下のスキル定義に従ってニュース収集を実行してください。
-
-          $(cat collect-SKILL.md)" \
-            --allowedTools "Bash,WebFetch,Read,Write,Edit" \
-            --model claude-sonnet-4-6 \
-            2>&1 | tee /tmp/collect.log
-          echo "--- collect done ---"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python scripts/collect.py
 
       - name: Commit and push results
         run: |
@@ -51,4 +33,4 @@ jobs:
           git config user.email "ai-curator-bot@users.noreply.github.com"
           git add ideas/daily/
           git diff --staged --quiet && echo "No changes" || \
-            git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push
+            (git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push)
