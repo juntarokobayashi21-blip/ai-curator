@@ -116,7 +116,8 @@ print('HTML saved:', html_path)
 
 ### ステップ6: Discord通知
 
-保存完了後、以下のPythonコマンドでDiscordに `.md` と `.html` の両ファイルを添付して通知を送る：
+保存完了後、以下のPythonコマンドでDiscordに通知を送る。
+HTMLはGitHub PagesのURLとしてメッセージ本文に含め、mdファイルを添付する。
 
 ```bash
 python3 -c "
@@ -136,14 +137,16 @@ if not webhook:
     exit()
 
 date = 'YYYYMMDD'  # 実際の日付に置換
-md_path   = f'ideas/daily/{date}-trend.md'
-html_path = f'ideas/daily/{date}-trend.html'
+date_fmt = 'YYYY-MM-DD'  # 実際の日付に置換
+md_path  = f'ideas/daily/{date}-trend.md'
+html_url = f'https://juntarokobayashi21-blip.github.io/ai-curator/ideas/daily/{date}-trend.html'
 
 msg = (
-    '**【AIキュレーター】YYYY-MM-DD トレンドニュース**\n'
+    f'**【AIキュレーター】{date_fmt} トレンドニュース**\n'
     '★★★ 注目記事 N件\n\n'
     '▶ タイトル1\n'
     '▶ タイトル2\n\n'
+    f'🌐 {html_url}\n'
     f'📄 {md_path}'
 )
 
@@ -152,7 +155,6 @@ result = subprocess.run([
     '-X', 'POST', webhook,
     '-F', f'payload_json={json.dumps({\"content\": msg})}',
     '-F', f'file1=@{md_path}',
-    '-F', f'file2=@{html_path}',
 ], capture_output=True, text=True)
 print('HTTP:', result.stdout)
 "
@@ -160,8 +162,10 @@ print('HTTP:', result.stdout)
 
 注意事項：
 - `DISCORD_WEBHOOK_URL` 環境変数が未設定の場合はスキップしてよい
-- ファイル添付には `multipart/form-data`（`-F` オプション）を使うこと（`-d` では添付不可）
+- HTMLはGitHub PagesのURL（`https://juntarokobayashi21-blip.github.io/ai-curator/ideas/daily/YYYYMMDD-trend.html`）としてメッセージ本文に含める
+- mdファイルは引き続き添付する
 - メッセージが2000文字を超える場合は★★★のタイトルのみに絞る
+- GitHub Pagesへの反映はgit push後数分かかる場合がある
 
 ### 完了メッセージ
 
