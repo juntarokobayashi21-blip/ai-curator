@@ -38,10 +38,26 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
   curl -s -H "User-Agent: news-collector/1.0" https://www.reddit.com/r/artificial+MachineLearning+netsec+selfhosted+SideProject+ExperiencedDevs+cscareerquestions+webdev+technology/.json | head -c 50000
   ```
 
+### ステップ2.5: 重複排除
+
+全ソースの収集が終わったら、記事をマージする。
+
+**重複判定の基準（いずれか一つを満たせば同一記事とみなす）：**
+- URLのドメイン＋パスが一致（クエリパラメータは無視）
+- タイトルに3語以上の共通キーワードがある（助詞・冠詞・"the/a/の/は/が"等を除く）
+
+**マージ処理：**
+- 同一記事と判定されたものはひとつにまとめ、出現したソースをすべて記録する
+- 例: `HN / はてブ / Reddit`
+- ソース数に応じてバッジを付ける:
+  - 2ソース → `(2ソース🔥)`
+  - 3ソース以上 → `(Nソース🔥🔥)`
+- 複数ソースで話題になっている記事は、評価を **1段階引き上げる方向** で検討する（★★→★★★ への昇格など）
+
 ### ステップ3: 評価・整理
 
-収集した記事をCLAUDE.mdの興味領域と照らし合わせて：
-- 各記事に ★★★ / ★★ / ★ を付ける
+収集・マージ済みの記事をCLAUDE.mdの興味領域と照らし合わせて：
+- 各記事に ★★★ / ★★ / ★ を付ける（複数ソース記事は優遇）
 - カテゴリ（AI開発・セキュリティ・個人開発など）を分類
 - ★★★の記事は特に詳しくコメントを添える
 
@@ -56,18 +72,25 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
 
 | タイトル | ソース | カテゴリ | コメント |
 |---|---|---|---|
-| [タイトル](URL) | HN | AI開発 | 一言コメント |
+| [タイトル](URL) | HN / はてブ (2ソース🔥) | AI開発 | 一言コメント |
+| [タイトル](URL) | Zenn | 個人開発 | 一言コメント |
 
 ## ★★ 気になる記事
 
 | タイトル | ソース | カテゴリ |
 |---|---|---|
-| [タイトル](URL) | はてブ | セキュリティ |
+| [タイトル](URL) | HN / Reddit / はてブ (3ソース🔥🔥) | セキュリティ |
+| [タイトル](URL) | Qiita | AI開発 |
 
 ## ★ その他
 
-- [タイトル](URL) — ソース
+- [タイトル](URL) — HN / Zenn (2ソース🔥)
+- [タイトル](URL) — Google News
 ```
+
+**ソース表記のルール：**
+- 単一ソース: `HN` / `はてブ` / `Zenn` / `Qiita` / `Google News` / `Reddit`
+- 複数ソース: `HN / はてブ (2ソース🔥)` のようにスラッシュで並べ、末尾にバッジを付ける
 
 ### ステップ5: HTMLファイル生成
 
@@ -103,25 +126,49 @@ def badge(cat):
     color = next((c for k,c in colors.items() if k in cat), '#6b7280')
     return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">{cat}</span>'
 
+def source_html(src):
+    # 複数ソースバッジを色付きで表示 (例: "HN / はてブ (2ソース🔥)")
+    multi = re.search(r'\((\d+)ソース(🔥+)\)', src)
+    if multi:
+        count = multi.group(1)
+        flames = multi.group(2)
+        sources_part = re.sub(r'\s*\(\d+ソース🔥+\)', '', src).strip()
+        badge_html = (f'<span style="background:#f59e0b;color:#fff;padding:1px 7px;'
+                      f'border-radius:99px;font-size:.7em;margin-left:4px">'
+                      f'{count}ソース{flames}</span>')
+        return f'{sources_part}{badge_html}'
+    return src
+
 s3 = re.search(r'## ★★★ 注目記事\n(.*?)(?=\n## )', md, re.DOTALL)
 s2 = re.search(r'## ★★ 気になる記事\n(.*?)(?=\n## )', md, re.DOTALL)
 s1 = re.search(r'## ★ その他\n(.*?)$', md, re.DOTALL)
 
 s3_html = ''.join(
     f'<div class="card"><div class="card-title">{md_link(r[0])}</div>'
-    f'<div class="card-meta">{r[1]} &nbsp;{badge(r[2])}</div>'
+    f'<div class="card-meta">{source_html(r[1])} &nbsp;{badge(r[2])}</div>'
     f'<div class="card-comment">{r[3]}</div></div>'
     for r in parse_table_rows(s3.group(1)) if len(r) >= 4
 ) if s3 else ''
 
 s2_html = ''.join(
     f'<li class="s2-item">{md_link(r[0])}<br>'
-    f'<span class="s2-meta">{r[1]} &nbsp;{badge(r[2])}</span></li>'
+    f'<span class="s2-meta">{source_html(r[1])} &nbsp;{badge(r[2])}</span></li>'
     for r in parse_table_rows(s2.group(1)) if len(r) >= 3
 ) if s2 else ''
 
+def s1_line_html(line):
+    # "- [title](url) — ソース" の形式をパース
+    inner = line[2:]  # "- " を除去
+    # "— ソース" 部分を分離して source_html を適用
+    m = re.match(r'(.+?) — (.+)$', inner)
+    if m:
+        linked = md_link(m.group(1))
+        src = source_html(m.group(2))
+        return f'<li>{linked} <span style="color:#9ca3af;font-size:.85em">— {src}</span></li>'
+    return f'<li>{md_link(inner)}</li>'
+
 s1_html = ''.join(
-    f'<li>{md_link(line[2:])}</li>'
+    s1_line_html(line)
     for line in (s1.group(1).strip().splitlines() if s1 else [])
     if line.strip().startswith('- ')
 )
