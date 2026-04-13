@@ -340,10 +340,14 @@ def badge(cat):
 
 def build_html(s3, s2, s1, summary=''):
     summary_html = f'<div class="summary-box">{summary}</div>' if summary else ''
+    def fmt_comment(text):
+        # 句点ごとに改行を入れる（末尾の句点は除く）
+        return re.sub(r'。(?!$)', '。<br>', text.strip().rstrip('。')) + '。'
+
     cards = ''.join(
         f'<div class="card"><div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
         f'<div class="card-meta">{a["source"]} &nbsp;{badge(a.get("category",""))}</div>'
-        f'<div class="card-comment">{a.get("comment","")}</div></div>'
+        f'<div class="card-comment">{fmt_comment(a.get("comment",""))}</div></div>'
         for a in s3
     )
     s2items = ''.join(
@@ -458,12 +462,15 @@ def main():
             items += line
         msg = header + items + footer
         r = subprocess.run([
-            'curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+            'curl', '-s', '-w', '\n%{http_code}',
             '-X', 'POST', DISCORD_WEBHOOK,
             '-F', f'payload_json={json.dumps({"content": msg})}',
             '-F', f'file1=@{MD_PATH}',
         ], capture_output=True, text=True)
-        print(f'Discord: HTTP {r.stdout}')
+        *body_lines, status = r.stdout.strip().splitlines()
+        print(f'Discord: HTTP {status}')
+        if status != '200':
+            print(f'Discord error: {"".join(body_lines)}')
     else:
         print('Discord: skipped (no webhook)')
 
