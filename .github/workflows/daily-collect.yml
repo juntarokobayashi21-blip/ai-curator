@@ -33,10 +33,9 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
         run: |
-          claude \
-            --print \
-            --allowedTools "WebFetch,Bash,Read,Write" \
-            "collect-SKILL.mdに記載のnews-collectスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。"
+          echo "collect-SKILL.mdに記載のnews-collectスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。" | \
+          claude -p --dangerously-skip-permissions \
+            --allowedTools "WebFetch,Bash,Read,Write"
 
       - name: Run weekly summary (月曜のみ)
         if: ${{ github.event_name == 'schedule' && steps.collect.outcome == 'success' }}
@@ -48,10 +47,9 @@ jobs:
           DAY=$(date '+%u')  # 1=月曜 〜 7=日曜
           if [ "$DAY" = "1" ]; then
             echo "月曜日: 週次まとめを実行します"
-            claude \
-              --print \
-              --allowedTools "Bash,Read,Write" \
-              "weekly-SKILL.mdに記載のweekly-summaryスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。"
+            echo "weekly-SKILL.mdに記載のweekly-summaryスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。" | \
+            claude -p --dangerously-skip-permissions \
+              --allowedTools "Bash,Read,Write"
           else
             echo "週次まとめは月曜のみ実行 (本日: $DAY)"
           fi
