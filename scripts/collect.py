@@ -24,19 +24,16 @@ JST = timezone(timedelta(hours=9))
 TODAY = datetime.now(JST).strftime('%Y-%m-%d')
 DATE  = datetime.now(JST).strftime('%Y%m%d')
 
-GITHUB_TOKEN       = os.environ.get('GITHUB_TOKEN', '')
-DISCORD_WEBHOOK    = os.environ.get('DISCORD_WEBHOOK_URL', '')
-GITHUB_PAGES_BASE  = 'https://juntarokobayashi21-blip.github.io/ai-curator'
+GITHUB_TOKEN      = os.environ.get('GITHUB_TOKEN', '')
+DISCORD_WEBHOOK   = os.environ.get('DISCORD_WEBHOOK_URL', '')
+GITHUB_PAGES_BASE = 'https://juntarokobayashi21-blip.github.io/ai-curator'
 MD_PATH   = f'ideas/daily/{DATE}-trend.md'
 HTML_PATH = f'ideas/daily/{DATE}-trend.html'
 
 # ─── Fetch helpers ────────────────────────────────────────────────────────────
 
-def get(url, headers=None):
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 news-collector/1.0',
-        **(headers or {})
-    })
+def get(url):
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 news-collector/1.0'})
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             return r.read().decode('utf-8', errors='replace')
@@ -45,9 +42,8 @@ def get(url, headers=None):
         return ''
 
 def parse_rss(xml, source):
-    items = re.findall(r'<item>(.*?)</item>', xml, re.DOTALL)
     out = []
-    for item in items[:20]:
+    for item in re.findall(r'<item>(.*?)</item>', xml, re.DOTALL)[:20]:
         title = re.search(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item)
         link  = re.search(r'<link>(.*?)</link>|<link[^>]+href="([^"]+)"', item)
         if title and link:
@@ -61,17 +57,15 @@ def parse_rss(xml, source):
 
 def fetch_hatena():
     print('  Hatena...')
-    xml = get('https://b.hatena.ne.jp/hotentry/it.rss')
-    items = re.findall(r'<item>(.*?)</item>', xml, re.DOTALL)
     out = []
-    for item in items[:30]:
+    for item in re.findall(r'<item>(.*?)</item>', get('https://b.hatena.ne.jp/hotentry/it.rss'), re.DOTALL)[:30]:
         title = re.search(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item)
         link  = re.search(r'<link>(.*?)</link>', item)
         bm    = re.search(r'<hatena:bookmarkcount>(\d+)</hatena:bookmarkcount>', item)
         if title and link:
             out.append({
-                'title': (title.group(1) or '').strip(),
-                'url':   (link.group(1) or '').strip(),
+                'title':  (title.group(1) or '').strip(),
+                'url':    (link.group(1) or '').strip(),
                 'source': f'はてブ({bm.group(1) if bm else "?"})',
             })
     return out
@@ -90,7 +84,7 @@ def fetch_qiita():
 
 def fetch_google_news():
     print('  Google News...')
-    it = parse_rss(get('https://news.google.com/rss/search?q=technology&hl=ja&gl=JP&ceid=JP:ja'), 'GoogleNews(IT)')
+    it  = parse_rss(get('https://news.google.com/rss/search?q=technology&hl=ja&gl=JP&ceid=JP:ja'), 'GoogleNews(IT)')
     biz = parse_rss(get('https://news.google.com/rss/search?q=business&hl=ja&gl=JP&ceid=JP:ja'), 'GoogleNews(Business)')
     return it + biz
 
@@ -103,15 +97,38 @@ def fetch_reddit():
             for p in data['data']['children'][:5]:
                 d = p['data']
                 out.append({
-                    'title': d['title'],
-                    'url': f"https://reddit.com{d['permalink']}",
+                    'title':  d['title'],
+                    'url':    f"https://reddit.com{d['permalink']}",
                     'source': f"Reddit/r/{sub}({d['score']})",
                 })
         except Exception as e:
             print(f'  [WARN] Reddit/{sub}: {e}')
     return out
 
-# ─── Keyword fallback ─────────────────────────────────────────────────────────
+# ─── AI helper ────────────────────────────────────────────────────────────────
+
+def call_ai(messages, temperature=0.3, timeout=60):
+    """GitHub Models API を呼び出してテキストを返す。失敗時は None。"""
+    if not GITHUB_TOKEN:
+        return None
+    payload = json.dumps({
+        'model': 'gpt-4o-mini',
+        'messages': messages,
+        'temperature': temperature,
+    }).encode('utf-8')
+    req = urllib.request.Request(
+        'https://models.inference.ai.azure.com/chat/completions',
+        data=payload,
+        headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read())['choices'][0]['message']['content']
+    except Exception as e:
+        print(f'[WARN] AI API failed: {e}')
+        return None
+
+# ─── Keyword fallback evaluation ──────────────────────────────────────────────
 
 KEYWORDS = {
     'AI開発': {
@@ -151,32 +168,26 @@ KEYWORDS = {
 }
 
 def keyword_evaluate(articles):
-    """キーワードマッチでフォールバック分類"""
     results = []
     for i, a in enumerate(articles):
         text = a['title']
         best_cat, best_score = '', 0
         for cat, kw in KEYWORDS.items():
             score = sum(3 for k in kw['high'] if k.lower() in text.lower())
-            score += sum(1 for k in kw['mid'] if k.lower() in text.lower())
+            score += sum(1 for k in kw['mid']  if k.lower() in text.lower())
             if score > best_score:
                 best_score, best_cat = score, cat
-        if best_score >= 6:   # 高キーワード2個以上
-            results.append({'index': i+1, 'rating': '★★★', 'category': best_cat, 'comment': ''})
-        elif best_score >= 3:  # 高キーワード1個
-            results.append({'index': i+1, 'rating': '★★', 'category': best_cat})
-        elif best_score >= 1:  # 中キーワードのみ
-            results.append({'index': i+1, 'rating': '★', 'category': best_cat})
+        if best_score >= 6:
+            results.append({'index': i+1, 'rating': '★★★', 'category': best_cat})
+        elif best_score >= 3:
+            results.append({'index': i+1, 'rating': '★★',  'category': best_cat})
+        elif best_score >= 1:
+            results.append({'index': i+1, 'rating': '★',   'category': best_cat})
     return results
 
-# ─── AI Evaluation ────────────────────────────────────────────────────────────
+# ─── Evaluation ───────────────────────────────────────────────────────────────
 
-def evaluate_ai(articles):
-    """GitHub Models (gpt-4o-mini) で評価。失敗時は None を返す"""
-    if not GITHUB_TOKEN:
-        print('[INFO] GITHUB_TOKEN not set')
-        return None
-
+def evaluate(articles):
     numbered = '\n'.join(f'{i+1}. [{a["source"]}] {a["title"]}' for i, a in enumerate(articles))
     prompt = f"""以下は今日収集したニュース記事の一覧です。
 以下の興味領域に基づいて各記事を評価してください。
@@ -201,52 +212,31 @@ def evaluate_ai(articles):
 
 ## 出力形式（JSONのみ、説明不要）
 [
-  {{"index": 1, "rating": "★★★", "category": "AI開発", "comment": "一言コメント"}},
-  {{"index": 3, "rating": "★★", "category": "セキュリティ"}},
-  {{"index": 5, "rating": "★", "category": "ビジネス動向"}}
+  {{"index": 1, "rating": "★★★", "category": "AI開発"}},
+  {{"index": 3, "rating": "★★",  "category": "セキュリティ"}},
+  {{"index": 5, "rating": "★",   "category": "ビジネス動向"}}
 ]"""
 
-    payload = json.dumps({
-        'model': 'gpt-4o-mini',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'temperature': 0.3,
-    }).encode('utf-8')
+    content = call_ai([{'role': 'user', 'content': prompt}], timeout=60)
+    if content:
+        m = re.search(r'\[.*\]', content, re.DOTALL)
+        if m:
+            result = json.loads(m.group())
+            if result:
+                print(f'[INFO] AI evaluated: {len(result)} articles')
+                return result
+        print('[WARN] AI returned empty evaluation')
+    else:
+        print('[INFO] GITHUB_TOKEN not set or API failed')
 
-    req = urllib.request.Request(
-        'https://models.inference.ai.azure.com/chat/completions',
-        data=payload,
-        headers={
-            'Authorization': f'Bearer {GITHUB_TOKEN}',
-            'Content-Type': 'application/json',
-        }
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            result = json.loads(r.read())
-            content = result['choices'][0]['message']['content']
-            print(f'[AI] response length: {len(content)}')
-            m = re.search(r'\[.*\]', content, re.DOTALL)
-            if m:
-                return json.loads(m.group())
-    except Exception as e:
-        print(f'[WARN] GitHub Models failed: {e}')
-    return None
-
-def evaluate(articles):
-    """AI評価を試み、失敗したらキーワードフォールバック"""
-    result = evaluate_ai(articles)
-    if result is not None and len(result) > 0:
-        print(f'[INFO] AI evaluated: {len(result)} articles')
-        return result
     print('[INFO] Falling back to keyword evaluation')
     result = keyword_evaluate(articles)
     print(f'[INFO] Keyword evaluated: {len(result)} articles')
     return result
 
-# ─── Per-article comments ─────────────────────────────────────────────────────
+# ─── Comments ─────────────────────────────────────────────────────────────────
 
 def _comment_fallback(a):
-    """API失敗時：ソース情報から定型コメントを生成"""
     src = a.get('source', '')
     cat = a.get('category', '')
     n = re.search(r'\((\d+)\)', src)
@@ -264,16 +254,11 @@ def _comment_fallback(a):
     return f'{cat}分野の注目記事。実務や最新動向を把握するうえで参考になる内容が含まれている。気になるキーワードがあれば詳しく読んでみよう。'
 
 def generate_comments(s3):
-    """★★★ 記事に一言コメントを付与（GitHub Models、失敗時は定型文）"""
+    """★★★ 記事に2〜3文のコメントを付与（API失敗時は定型文）"""
     if not s3:
         return s3
-    needs = s3  # 常に全★★★記事のコメントを生成し直す
-    if GITHUB_TOKEN:
-        numbered = '\n'.join(
-            f'{i+1}. [{a.get("category","")}] {a["title"]}'
-            for i, a in enumerate(needs)
-        )
-        prompt = f"""以下の記事それぞれに、日本語で紹介コメントを書いてください。
+    numbered = '\n'.join(f'{i+1}. [{a.get("category","")}] {a["title"]}' for i, a in enumerate(s3))
+    prompt = f"""以下の記事それぞれに、日本語で紹介コメントを書いてください。
 各コメントは「背景」「注目点」「読む価値」の3点を含む2〜3文にしてください。
 
 記事：
@@ -282,49 +267,30 @@ def generate_comments(s3):
 以下の形式で出力してください（番号と「|||」で区切る）：
 1|||背景を説明する文。注目すべき点を説明する文。読む価値を説明する文。
 2|||背景を説明する文。注目すべき点を説明する文。読む価値を説明する文。"""
-        payload = json.dumps({
-            'model': 'gpt-4o-mini',
-            'messages': [
-                {'role': 'system', 'content': 'あなたはITニュースのキュレーターです。各記事に必ず2〜3文（句点で区切られた複数の文）の日本語コメントを書いてください。1文だけのコメントは絶対に書かないでください。'},
-                {'role': 'user', 'content': prompt},
-            ],
-            'temperature': 0.7,
-        }).encode('utf-8')
-        req = urllib.request.Request(
-            'https://models.inference.ai.azure.com/chat/completions',
-            data=payload,
-            headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                result = json.loads(r.read())
-                content = result['choices'][0]['message']['content']
-                cmap = {}
-                for line in content.splitlines():
-                    m = re.match(r'^(\d+)\|\|\|(.+)', line.strip())
-                    if m:
-                        cmap[int(m.group(1))] = m.group(2).strip()
-                if cmap:
-                    for i, a in enumerate(needs, 1):
-                        if cmap.get(i):
-                            a['comment'] = cmap[i]
-                    still_empty = [a for a in needs if not a.get('comment')]
-                    for a in still_empty:
-                        a['comment'] = _comment_fallback(a)
-                    return s3
-        except Exception as e:
-            print(f'[WARN] Comment generation failed: {e}')
-    # API失敗 → 全件フォールバック
-    for a in needs:
+
+    content = call_ai([
+        {'role': 'system', 'content': 'あなたはITニュースのキュレーターです。各記事に必ず2〜3文（句点で区切られた複数の文）の日本語コメントを書いてください。1文だけのコメントは絶対に書かないでください。'},
+        {'role': 'user',   'content': prompt},
+    ], temperature=0.7, timeout=30)
+
+    if content:
+        cmap = {}
+        for line in content.splitlines():
+            m = re.match(r'^(\d+)\|\|\|(.+)', line.strip())
+            if m:
+                cmap[int(m.group(1))] = m.group(2).strip()
+        if cmap:
+            for i, a in enumerate(s3, 1):
+                a['comment'] = cmap.get(i) or _comment_fallback(a)
+            return s3
+
+    for a in s3:
         a['comment'] = _comment_fallback(a)
     return s3
 
 # ─── Summary ──────────────────────────────────────────────────────────────────
 
 def _summary_fallback(s3):
-    """API失敗時：カテゴリ統計から定型まとめを生成"""
-    if not s3:
-        return ''
     cats = {}
     for a in s3:
         for c in a.get('category', '').split('/'):
@@ -338,16 +304,14 @@ def _summary_fallback(s3):
     titles_sample = '、'.join(f'「{a["title"][:20]}…」' for a in s3[:2])
     return (f'本日は{total}件の注目記事を収集しました。'
             f'{main_cat}関連が{main_cnt}件と最多で、{titles_sample}などが話題です。'
-            f'{second}'
-            f'気になる記事をチェックしてみてください。')
+            f'{second}気になる記事をチェックしてみてください。')
 
 def generate_summary(s3):
-    """★★★ 記事をもとに今日のまとめ文を生成（GitHub Models、失敗時は定型文）"""
+    """★★★ 記事をもとに今日のまとめ文を生成（API失敗時は定型文）"""
     if not s3:
         return ''
-    if GITHUB_TOKEN:
-        titles = '\n'.join(f'- [{a.get("category","")}] {a["title"]}' for a in s3[:12])
-        prompt = f"""以下は今日の注目ニュース（★★★）です。これらを踏まえ、今日のトレンドを3〜4文の日本語でまとめてください。
+    titles = '\n'.join(f'- [{a.get("category","")}] {a["title"]}' for a in s3[:12])
+    prompt = f"""以下は今日の注目ニュース（★★★）です。これらを踏まえ、今日のトレンドを3〜4文の日本語でまとめてください。
 
 観点：
 1. 今日もっとも多かったカテゴリとその傾向
@@ -358,24 +322,11 @@ def generate_summary(s3):
 {titles}
 
 まとめ文のみ出力（箇条書き不要、3〜4文の連続した文章で）："""
-        payload = json.dumps({
-            'model': 'gpt-4o-mini',
-            'messages': [{'role': 'user', 'content': prompt}],
-            'temperature': 0.7,
-        }).encode('utf-8')
-        req = urllib.request.Request(
-            'https://models.inference.ai.azure.com/chat/completions',
-            data=payload,
-            headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                result = json.loads(r.read())
-                text = result['choices'][0]['message']['content'].strip()
-                if text:
-                    return text
-        except Exception as e:
-            print(f'[WARN] Summary API failed: {e}')
+
+    content = call_ai([{'role': 'user', 'content': prompt}], temperature=0.7, timeout=30)
+    if content and content.strip():
+        return content.strip()
+
     print('[INFO] Using fallback summary')
     return _summary_fallback(s3)
 
@@ -388,9 +339,7 @@ def badge(cat):
     return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">{cat}</span>'
 
 def build_html(s3, s2, s1, summary=''):
-    summary_html = (
-        f'<div class="summary-box">{summary}</div>' if summary else ''
-    )
+    summary_html = f'<div class="summary-box">{summary}</div>' if summary else ''
     cards = ''.join(
         f'<div class="card"><div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
         f'<div class="card-meta">{a["source"]} &nbsp;{badge(a.get("category",""))}</div>'
@@ -457,7 +406,7 @@ def main():
     for ev in evals:
         idx = ev['index'] - 1
         if 0 <= idx < len(articles):
-            a = {**articles[idx], 'category': ev.get('category',''), 'comment': ev.get('comment','')}
+            a = {**articles[idx], 'category': ev.get('category', '')}
             rated.setdefault(ev['rating'], []).append(a)
 
     s3 = rated.get('★★★', [])
@@ -478,9 +427,9 @@ def main():
     if summary:
         lines += ['## 今日のまとめ\n', summary, '']
     lines += ['## ★★★ 注目記事\n',
-             '| タイトル | ソース | カテゴリ | コメント |', '|---|---|---|---|']
+              '| タイトル | ソース | カテゴリ | コメント |', '|---|---|---|---|']
     for a in s3:
-        lines.append(f'| [{a["title"]}]({a["url"]}) | {a["source"]} | {a["category"]} | {a["comment"]} |')
+        lines.append(f'| [{a["title"]}]({a["url"]}) | {a["source"]} | {a["category"]} | {a.get("comment","")} |')
     lines += ['\n## ★★ 気になる記事\n', '| タイトル | ソース | カテゴリ |', '|---|---|---|']
     for a in s2:
         lines.append(f'| [{a["title"]}]({a["url"]}) | {a["source"]} | {a["category"]} |')
@@ -500,7 +449,6 @@ def main():
         header = (f'**【AIキュレーター】{TODAY} トレンドニュース**\n'
                   f'★★★ 注目記事 {len(s3)}件\n\n')
         footer = f'\n🌐 {html_url}\n📄 {MD_PATH}'
-        # 2000文字上限に収まるよう記事リストを絞る
         items = ''
         for a in s3:
             line = f'▶ {a["title"]}\n'
