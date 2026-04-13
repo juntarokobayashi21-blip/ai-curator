@@ -98,8 +98,22 @@ def trending_words(articles):
 
 # ─── AI Summary ───────────────────────────────────────────────────────────────
 
+def _summary_fallback(top10, all_articles):
+    cats = {}
+    for a in all_articles:
+        for c in a.get('category', '').split('/'):
+            c = c.strip()
+            if c:
+                cats[c] = cats.get(c, 0) + 1
+    top_cats = sorted(cats.items(), key=lambda x: x[1], reverse=True)
+    main_cat = top_cats[0][0] if top_cats else 'テクノロジー'
+    titles_sample = '、'.join(f'「{a["title"][:20]}…」' for a in top10[:2])
+    return (f'今週は{len(all_articles)}件の注目記事を収集しました。'
+            f'{main_cat}関連が最多で、{titles_sample}などが特に話題になりました。'
+            f'来週も引き続きトレンドをウォッチしていきましょう。')
+
 def generate_summary(top10):
-    if not GITHUB_TOKEN or not top10:
+    if not top10:
         return ''
     titles = '\n'.join(f'- [{a["category"]}] {a["title"]}' for a in top10[:10])
     prompt = f"""以下は今週の注目ニュースTOP10です。今週のトレンドを3〜4文の日本語でまとめてください。
@@ -126,10 +140,13 @@ def generate_summary(top10):
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             result = json.loads(r.read())
-            return result['choices'][0]['message']['content'].strip()
+            text = result['choices'][0]['message']['content'].strip()
+            if text:
+                return text
     except Exception as e:
-        print(f'[WARN] Summary generation failed: {e}')
-    return ''
+        print(f'[WARN] Summary API failed: {e}')
+    print('[INFO] Using fallback summary')
+    return _summary_fallback(top10, top10)
 
 # ─── HTML ─────────────────────────────────────────────────────────────────────
 

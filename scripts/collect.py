@@ -237,12 +237,33 @@ def evaluate(articles):
 
 # ─── Summary ──────────────────────────────────────────────────────────────────
 
-def generate_summary(s3):
-    """★★★ 記事をもとに今日のまとめ文を生成（GitHub Models）"""
-    if not GITHUB_TOKEN or not s3:
+def _summary_fallback(s3):
+    """API失敗時：カテゴリ統計から定型まとめを生成"""
+    if not s3:
         return ''
-    titles = '\n'.join(f'- [{a.get("category","")}] {a["title"]}' for a in s3[:12])
-    prompt = f"""以下は今日の注目ニュース（★★★）です。これらを踏まえ、今日のトレンドを3〜4文の日本語でまとめてください。
+    cats = {}
+    for a in s3:
+        for c in a.get('category', '').split('/'):
+            c = c.strip()
+            if c:
+                cats[c] = cats.get(c, 0) + 1
+    top = sorted(cats.items(), key=lambda x: x[1], reverse=True)
+    total = len(s3)
+    main_cat, main_cnt = top[0] if top else ('テクノロジー', total)
+    second = f'次いで{top[1][0]}（{top[1][1]}件）が続きます。' if len(top) > 1 else ''
+    titles_sample = '、'.join(f'「{a["title"][:20]}…」' for a in s3[:2])
+    return (f'本日は{total}件の注目記事を収集しました。'
+            f'{main_cat}関連が{main_cnt}件と最多で、{titles_sample}などが話題です。'
+            f'{second}'
+            f'気になる記事をチェックしてみてください。')
+
+def generate_summary(s3):
+    """★★★ 記事をもとに今日のまとめ文を生成（GitHub Models、失敗時は定型文）"""
+    if not s3:
+        return ''
+    if GITHUB_TOKEN:
+        titles = '\n'.join(f'- [{a.get("category","")}] {a["title"]}' for a in s3[:12])
+        prompt = f"""以下は今日の注目ニュース（★★★）です。これらを踏まえ、今日のトレンドを3〜4文の日本語でまとめてください。
 
 観点：
 1. 今日もっとも多かったカテゴリとその傾向
@@ -253,23 +274,26 @@ def generate_summary(s3):
 {titles}
 
 まとめ文のみ出力（箇条書き不要、3〜4文の連続した文章で）："""
-    payload = json.dumps({
-        'model': 'gpt-4o-mini',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'temperature': 0.7,
-    }).encode('utf-8')
-    req = urllib.request.Request(
-        'https://models.inference.ai.azure.com/chat/completions',
-        data=payload,
-        headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            result = json.loads(r.read())
-            return result['choices'][0]['message']['content'].strip()
-    except Exception as e:
-        print(f'[WARN] Summary generation failed: {e}')
-    return ''
+        payload = json.dumps({
+            'model': 'gpt-4o-mini',
+            'messages': [{'role': 'user', 'content': prompt}],
+            'temperature': 0.7,
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            'https://models.inference.ai.azure.com/chat/completions',
+            data=payload,
+            headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                result = json.loads(r.read())
+                text = result['choices'][0]['message']['content'].strip()
+                if text:
+                    return text
+        except Exception as e:
+            print(f'[WARN] Summary API failed: {e}')
+    print('[INFO] Using fallback summary')
+    return _summary_fallback(s3)
 
 # ─── HTML ─────────────────────────────────────────────────────────────────────
 
