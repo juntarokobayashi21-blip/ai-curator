@@ -235,6 +235,42 @@ def evaluate(articles):
     print(f'[INFO] Keyword evaluated: {len(result)} articles')
     return result
 
+# ─── Summary ──────────────────────────────────────────────────────────────────
+
+def generate_summary(s3):
+    """★★★ 記事をもとに今日のまとめ文を生成（GitHub Models）"""
+    if not GITHUB_TOKEN or not s3:
+        return ''
+    titles = '\n'.join(f'- [{a.get("category","")}] {a["title"]}' for a in s3[:12])
+    prompt = f"""以下は今日の注目ニュース（★★★）です。これらを踏まえ、今日のトレンドを3〜4文の日本語でまとめてください。
+
+観点：
+1. 今日もっとも多かったカテゴリとその傾向
+2. 特に印象的だったトピック
+3. 読者へのひと言（今日読むべき理由・注目ポイント）
+
+記事：
+{titles}
+
+まとめ文のみ出力（箇条書き不要、3〜4文の連続した文章で）："""
+    payload = json.dumps({
+        'model': 'gpt-4o-mini',
+        'messages': [{'role': 'user', 'content': prompt}],
+        'temperature': 0.7,
+    }).encode('utf-8')
+    req = urllib.request.Request(
+        'https://models.inference.ai.azure.com/chat/completions',
+        data=payload,
+        headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            result = json.loads(r.read())
+            return result['choices'][0]['message']['content'].strip()
+    except Exception as e:
+        print(f'[WARN] Summary generation failed: {e}')
+    return ''
+
 # ─── HTML ─────────────────────────────────────────────────────────────────────
 
 def badge(cat):
@@ -243,7 +279,10 @@ def badge(cat):
     color = next((c for k, c in colors.items() if k in cat), '#6b7280')
     return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">{cat}</span>'
 
-def build_html(s3, s2, s1):
+def build_html(s3, s2, s1, summary=''):
+    summary_html = (
+        f'<div class="summary-box">{summary}</div>' if summary else ''
+    )
     cards = ''.join(
         f'<div class="card"><div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
         f'<div class="card-meta">{a["source"]} &nbsp;{badge(a.get("category",""))}</div>'
@@ -279,9 +318,11 @@ a{{color:#4f46e5;text-decoration:none}}a:hover{{text-decoration:underline}}
 .s2-meta{{font-size:.75em;color:#9ca3af}}
 .s1-list{{list-style:none;padding:0}}
 .s1-list li{{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}}
+.summary-box{{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:0 8px 8px 0;padding:.75em 1em;margin-bottom:1.25em;font-size:.9em;color:#3730a3;line-height:1.7}}
 </style></head>
 <body>
 <h1>📰 トレンドニュース {TODAY}</h1>
+{summary_html}
 <h2>★★★ 注目記事</h2>{cards}
 <h2>★★ 気になる記事</h2><ul class="s2-list">{s2items}</ul>
 <h2>★ その他</h2><ul class="s1-list">{s1items}</ul>
@@ -316,10 +357,16 @@ def main():
     s1 = rated.get('★', [])
     print(f'★★★:{len(s3)}  ★★:{len(s2)}  ★:{len(s1)}')
 
+    print('Generating summary...')
+    summary = generate_summary(s3)
+    print(f'Summary: {summary[:60]}...' if len(summary) > 60 else f'Summary: {summary}')
+
     # Markdown
     pathlib.Path(MD_PATH).parent.mkdir(parents=True, exist_ok=True)
-    lines = [f'# トレンドニュース {TODAY}\n',
-             '## ★★★ 注目記事\n',
+    lines = [f'# トレンドニュース {TODAY}\n']
+    if summary:
+        lines += ['## 今日のまとめ\n', summary, '']
+    lines += ['## ★★★ 注目記事\n',
              '| タイトル | ソース | カテゴリ | コメント |', '|---|---|---|---|']
     for a in s3:
         lines.append(f'| [{a["title"]}]({a["url"]}) | {a["source"]} | {a["category"]} | {a["comment"]} |')
@@ -333,7 +380,7 @@ def main():
     print(f'Saved: {MD_PATH}')
 
     # HTML
-    pathlib.Path(HTML_PATH).write_text(build_html(s3, s2, s1), encoding='utf-8')
+    pathlib.Path(HTML_PATH).write_text(build_html(s3, s2, s1, summary), encoding='utf-8')
     print(f'Saved: {HTML_PATH}')
 
     # Discord
