@@ -1,0 +1,57 @@
+name: Daily Trend Collection
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎朝 9:00 JST (= 0:00 UTC)
+  workflow_dispatch:       # Actions タブから手動実行も可能
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run collect script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
+          SKIP_DISCORD: '1'
+        run: python scripts/collect.py
+
+      - name: Run weekly summary (月曜のみ)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
+          SKIP_DISCORD: '1'
+        run: |
+          if [ "$(date +%u)" = "1" ]; then
+            echo "月曜日: 週次まとめを実行します"
+            python scripts/weekly.py
+          else
+            echo "週次まとめは月曜のみ実行"
+          fi
+
+      - name: Commit and push results
+        run: |
+          git config user.name "ai-curator-bot"
+          git config user.email "ai-curator-bot@users.noreply.github.com"
+          git add ideas/
+          git diff --staged --quiet && echo "No changes" || \
+            (git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push)
+
+      - name: Wait for GitHub Pages deployment
+        run: sleep 180
+
+      - name: Send Discord notification
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python scripts/collect.py --notify-only
