@@ -27,10 +27,22 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python scripts/collect.py
 
+      - name: Run weekly summary (月曜のみ)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ "$(date +%u)" = "1" ]; then
+            echo "月曜日: 週次まとめを実行します"
+            python scripts/weekly.py
+          else
+            echo "週次まとめは月曜のみ実行"
+          fi
+
       - name: Commit and push results
         run: |
           git config user.name "ai-curator-bot"
           git config user.email "ai-curator-bot@users.noreply.github.com"
-          git add ideas/daily/
+          git add ideas/
           git diff --staged --quiet && echo "No changes" || \
             (git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push)
