@@ -1,0 +1,70 @@
+name: Daily News Collection
+
+on:
+  schedule:
+    # 毎朝9:00 JST (00:00 UTC) に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 手動実行も可能
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run daily news collection
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+        run: |
+          claude \
+            --print \
+            --allowedTools "WebFetch,Bash,Read,Write" \
+            "collect-SKILL.mdに記載のnews-collectスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。"
+
+      - name: Run weekly summary (月曜のみ)
+        if: ${{ github.event_name == 'schedule' && steps.collect.outcome == 'success' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+        run: |
+          DAY=$(date '+%u')  # 1=月曜 〜 7=日曜
+          if [ "$DAY" = "1" ]; then
+            echo "月曜日: 週次まとめを実行します"
+            claude \
+              --print \
+              --allowedTools "Bash,Read,Write" \
+              "weekly-SKILL.mdに記載のweekly-summaryスキルを実行してください。今日の日付は$(date '+%Y-%m-%d')です。"
+          else
+            echo "週次まとめは月曜のみ実行 (本日: $DAY)"
+          fi
+
+      - name: Commit and push generated files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ideas/
+          if git diff --staged --quiet; then
+            echo "変更なし: コミットをスキップします"
+          else
+            DATE=$(date '+%Y-%m-%d')
+            git commit -m "chore: daily trend report ${DATE} [skip ci]"
+            git push origin ${{ github.ref_name }}
+          fi
