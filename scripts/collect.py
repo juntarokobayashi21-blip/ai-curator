@@ -33,14 +33,24 @@ HTML_PATH = f'ideas/daily/{DATE}-trend.html'
 
 # ─── Fetch helpers ────────────────────────────────────────────────────────────
 
-def get(url):
+def get(url, timeout=15):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 news-collector/1.0'})
     try:
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read().decode('utf-8', errors='replace')
     except Exception as e:
         print(f'  [WARN] {url}: {e}')
         return ''
+
+def fetch_ogp_image(url):
+    """記事URLからog:image URLを取得する。取得できない場合はNone。"""
+    html = get(url, timeout=8)
+    if not html:
+        return None
+    m = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html)
+    if not m:
+        m = re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html)
+    return m.group(1).strip() if m else None
 
 def parse_rss(xml, source):
     out = []
@@ -378,8 +388,17 @@ def build_html(s3, s2, s1, summary=''):
     cards = ''
     for a in s3:
         color = cat_color(a.get('category', ''))
+        img_html = (
+            f'<a href="{a["url"]}" tabindex="-1">'
+            f'<img class="card-img" src="{a["image"]}" alt="" loading="lazy" '
+            f'onerror="this.closest(\'.card-img-wrap\').remove()">'
+            f'</a>'
+        ) if a.get('image') else ''
+        img_wrap = f'<div class="card-img-wrap">{img_html}</div>' if img_html else ''
         cards += (
             f'<div class="card" style="border-left:4px solid {color}">'
+            f'{img_wrap}'
+            f'<div class="card-body">'
             f'<div class="card-header">'
             f'<span class="star-badge">★★★</span>'
             f'{badge(a.get("category",""))}'
@@ -387,6 +406,7 @@ def build_html(s3, s2, s1, summary=''):
             f'<div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
             f'<div class="card-source">{a["source"]}</div>'
             f'<div class="card-comment">{fmt_comment(a.get("comment",""))}</div>'
+            f'</div>'
             f'</div>'
         )
 
@@ -513,6 +533,19 @@ body {{
   transition: box-shadow .15s;
 }}
 .card:hover {{ box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }}
+.card-img-wrap {{
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: .75em;
+  max-height: 180px;
+}}
+.card-img {{
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}}
+.card-body {{ }}
 .card-header {{
   display: flex;
   align-items: center;
@@ -655,6 +688,13 @@ def main():
 
     print('Generating comments for ★★★ articles...')
     s3 = generate_comments(s3)
+
+    print('Fetching OGP images for ★★★ articles...')
+    for a in s3:
+        img = fetch_ogp_image(a['url'])
+        if img:
+            a['image'] = img
+            print(f'  [IMG] {a["title"][:40]}')
 
     print('Generating summary...')
     summary = generate_summary(s3)
