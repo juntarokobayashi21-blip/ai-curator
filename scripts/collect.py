@@ -12,6 +12,14 @@ import pathlib
 import urllib.request
 from datetime import datetime, timezone, timedelta
 
+# .env 読み込み
+_env = pathlib.Path(__file__).parent.parent / '.env'
+if _env.exists():
+    for _line in _env.read_text(encoding='utf-8').splitlines():
+        if '=' in _line and not _line.startswith('#'):
+            _k, _v = _line.split('=', 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
+
 JST = timezone(timedelta(hours=9))
 TODAY = datetime.now(JST).strftime('%Y-%m-%d')
 DATE  = datetime.now(JST).strftime('%Y%m%d')
@@ -244,39 +252,43 @@ def _comment_fallback(a):
     n = re.search(r'\((\d+)\)', src)
     count = n.group(1) if n else None
     if 'はてブ' in src:
-        return f'はてブ{count}件の注目エントリ。{cat}分野で広く読まれている。' if count else f'{cat}分野のはてブ人気記事。'
+        base = f'はてブ{count}件を集めた{cat}分野の注目エントリ。' if count else f'{cat}分野のはてブ人気記事。'
+        return base + '多くのエンジニアが注目しており、現場での関心の高さがうかがえる。ざっと目を通しておきたい一本。'
     if 'HN' in src:
-        return f'Hacker Newsで話題。{cat}領域の海外動向として注目。'
+        return f'Hacker Newsで話題になっている{cat}領域の記事。海外エンジニアコミュニティでの反応が大きく、グローバルなトレンドを把握するのに役立つ。英語だが概要だけでも確認しておく価値がある。'
     if 'Reddit' in src:
-        return f'Reddit {count}upvotes。{cat}関連のコミュニティ反応が大きい。' if count else f'{cat}分野の海外トレンド。'
+        base = f'Reddit で{count}upvotesを獲得した{cat}関連の投稿。' if count else f'{cat}分野の海外コミュニティ発の話題。'
+        return base + 'コメント欄にも実践者の知見が集まりやすく、記事本文と合わせて読むと理解が深まる。'
     if 'Zenn' in src or 'Qiita' in src:
-        return f'日本人エンジニアによる{cat}の実践的な解説記事。'
-    return f'{cat}分野の注目記事。'
+        return f'日本人エンジニアによる{cat}の実践的な解説記事。実際の開発経験をもとに書かれており、コードや具体例が豊富で手を動かしながら学べる内容になっている可能性が高い。'
+    return f'{cat}分野の注目記事。実務や最新動向を把握するうえで参考になる内容が含まれている。気になるキーワードがあれば詳しく読んでみよう。'
 
 def generate_comments(s3):
     """★★★ 記事に一言コメントを付与（GitHub Models、失敗時は定型文）"""
     if not s3:
         return s3
-    needs = [a for a in s3 if not a.get('comment')]
-    if not needs:
-        return s3
+    needs = s3  # 常に全★★★記事のコメントを生成し直す
     if GITHUB_TOKEN:
         numbered = '\n'.join(
             f'{i+1}. [{a.get("category","")}] {a["title"]}'
             for i, a in enumerate(needs)
         )
-        prompt = f"""以下の注目記事（★★★）それぞれに、15〜30文字の日本語で一言コメントをつけてください。
-記事の価値・注目ポイント・読むべき理由を簡潔に。
+        prompt = f"""以下の記事それぞれに、日本語で紹介コメントを書いてください。
+各コメントは「背景」「注目点」「読む価値」の3点を含む2〜3文にしてください。
 
 記事：
 {numbered}
 
-出力形式（JSONのみ、説明不要）：
-[{{"index": 1, "comment": "一言コメント"}}, {{"index": 2, "comment": "一言コメント"}}]"""
+以下の形式で出力してください（番号と「|||」で区切る）：
+1|||背景を説明する文。注目すべき点を説明する文。読む価値を説明する文。
+2|||背景を説明する文。注目すべき点を説明する文。読む価値を説明する文。"""
         payload = json.dumps({
             'model': 'gpt-4o-mini',
-            'messages': [{'role': 'user', 'content': prompt}],
-            'temperature': 0.3,
+            'messages': [
+                {'role': 'system', 'content': 'あなたはITニュースのキュレーターです。各記事に必ず2〜3文（句点で区切られた複数の文）の日本語コメントを書いてください。1文だけのコメントは絶対に書かないでください。'},
+                {'role': 'user', 'content': prompt},
+            ],
+            'temperature': 0.7,
         }).encode('utf-8')
         req = urllib.request.Request(
             'https://models.inference.ai.azure.com/chat/completions',
@@ -287,14 +299,15 @@ def generate_comments(s3):
             with urllib.request.urlopen(req, timeout=30) as r:
                 result = json.loads(r.read())
                 content = result['choices'][0]['message']['content']
-                m = re.search(r'\[.*\]', content, re.DOTALL)
-                if m:
-                    comments = json.loads(m.group())
-                    cmap = {c['index']: c.get('comment', '') for c in comments}
+                cmap = {}
+                for line in content.splitlines():
+                    m = re.match(r'^(\d+)\|\|\|(.+)', line.strip())
+                    if m:
+                        cmap[int(m.group(1))] = m.group(2).strip()
+                if cmap:
                     for i, a in enumerate(needs, 1):
                         if cmap.get(i):
                             a['comment'] = cmap[i]
-                    # APIで取得できたものはここで終わり
                     still_empty = [a for a in needs if not a.get('comment')]
                     for a in still_empty:
                         a['comment'] = _comment_fallback(a)
