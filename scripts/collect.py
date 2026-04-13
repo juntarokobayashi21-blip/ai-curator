@@ -333,62 +333,296 @@ def generate_summary(s3):
 
 # ─── HTML ─────────────────────────────────────────────────────────────────────
 
+CAT_COLORS = {
+    'AI開発':       '#4f46e5',
+    'セキュリティ': '#dc2626',
+    '個人開発':     '#16a34a',
+    'キャリア':     '#d97706',
+    'テクノロジー': '#0891b2',
+    'ビジネス':     '#7c3aed',
+}
+
+def cat_color(cat):
+    return next((c for k, c in CAT_COLORS.items() if k in cat), '#6b7280')
+
 def badge(cat):
-    colors = {'AI開発':'#4f46e5','セキュリティ':'#dc2626','個人開発':'#16a34a',
-              'キャリア':'#d97706','テクノロジー':'#0891b2','ビジネス':'#7c3aed'}
-    color = next((c for k, c in colors.items() if k in cat), '#6b7280')
-    return f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">{cat}</span>'
+    color = cat_color(cat)
+    return (f'<span style="background:{color};color:#fff;padding:3px 10px;'
+            f'border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">{cat}</span>')
+
+def fmt_comment(text):
+    """句点ごとに改行（末尾句点は保持）"""
+    return re.sub(r'。(?!$)', '。<br>', text.strip().rstrip('。')) + '。'
 
 def build_html(s3, s2, s1, summary=''):
-    summary_html = f'<div class="summary-box">{summary}</div>' if summary else ''
-    def fmt_comment(text):
-        # 句点ごとに改行を入れる（末尾の句点は除く）
-        return re.sub(r'。(?!$)', '。<br>', text.strip().rstrip('。')) + '。'
+    # ─ サマリーボックス ─
+    summary_html = (
+        f'<div class="summary-box">'
+        f'<div class="summary-icon">📋</div>'
+        f'<div>{summary}</div>'
+        f'</div>'
+    ) if summary else ''
 
-    cards = ''.join(
-        f'<div class="card"><div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
-        f'<div class="card-meta">{a["source"]} &nbsp;{badge(a.get("category",""))}</div>'
-        f'<div class="card-comment">{fmt_comment(a.get("comment",""))}</div></div>'
-        for a in s3
+    # ─ 統計バー ─
+    stats_html = (
+        f'<div class="stats-bar">'
+        f'<span class="stat"><span class="stat-star">★★★</span> 注目 {len(s3)}件</span>'
+        f'<span class="stat-sep">·</span>'
+        f'<span class="stat"><span class="stat-star2">★★</span> 気になる {len(s2)}件</span>'
+        f'<span class="stat-sep">·</span>'
+        f'<span class="stat">その他 {len(s1)}件</span>'
+        f'</div>'
     )
-    s2items = ''.join(
-        f'<li class="s2-item"><a href="{a["url"]}">{a["title"]}</a><br>'
-        f'<span class="s2-meta">{a["source"]} &nbsp;{badge(a.get("category",""))}</span></li>'
-        for a in s2
-    )
-    s1items = ''.join(
-        f'<li><a href="{a["url"]}">{a["title"]}</a> — {a["source"]}</li>'
-        for a in s1
-    )
+
+    # ─ ★★★ カード ─
+    cards = ''
+    for a in s3:
+        color = cat_color(a.get('category', ''))
+        cards += (
+            f'<div class="card" style="border-left:4px solid {color}">'
+            f'<div class="card-header">'
+            f'<span class="star-badge">★★★</span>'
+            f'{badge(a.get("category",""))}'
+            f'</div>'
+            f'<div class="card-title"><a href="{a["url"]}">{a["title"]}</a></div>'
+            f'<div class="card-source">{a["source"]}</div>'
+            f'<div class="card-comment">{fmt_comment(a.get("comment",""))}</div>'
+            f'</div>'
+        )
+
+    # ─ ★★ リスト ─
+    s2items = ''
+    for a in s2:
+        color = cat_color(a.get('category', ''))
+        s2items += (
+            f'<li class="s2-item" style="border-left:3px solid {color}40">'
+            f'<a class="s2-title" href="{a["url"]}">{a["title"]}</a>'
+            f'<div class="s2-meta">'
+            f'<span class="s2-source">{a["source"]}</span>'
+            f'{badge(a.get("category",""))}'
+            f'</div>'
+            f'</li>'
+        )
+
+    # ─ ★ その他 ─
+    s1items = ''
+    for a in s1:
+        s1items += (
+            f'<li class="s1-item">'
+            f'<a href="{a["url"]}">{a["title"]}</a>'
+            f'<span class="s1-meta">{badge(a.get("category",""))} '
+            f'<span class="s1-source">{a["source"]}</span></span>'
+            f'</li>'
+        )
+
     return f"""<!DOCTYPE html>
-<html lang="ja"><head>
+<html lang="ja">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>トレンドニュース {TODAY}</title>
+<title>AIキュレーター | {TODAY}</title>
 <style>
-*{{box-sizing:border-box;margin:0;padding:0}}
-body{{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f4f6;color:#1f2937;padding:1em;line-height:1.6}}
-h1{{font-size:1.2em;color:#111827;margin:.5em 0 1em;padding-bottom:.4em;border-bottom:2px solid #4f46e5}}
-h2{{font-size:1em;margin:1.5em 0 .75em;color:#374151}}
-a{{color:#4f46e5;text-decoration:none}}a:hover{{text-decoration:underline}}
-.card{{background:#fff;border-radius:12px;padding:1em;margin-bottom:.75em;box-shadow:0 1px 3px rgba(0,0,0,.1)}}
-.card-title{{font-size:1em;font-weight:bold;margin-bottom:.4em}}
-.card-meta{{font-size:.8em;color:#6b7280;margin-bottom:.5em}}
-.card-comment{{font-size:.875em;color:#374151}}
-.s2-list{{list-style:none;padding:0}}
-.s2-item{{background:#fff;border-radius:8px;padding:.75em 1em;margin-bottom:.5em;font-size:.9em;box-shadow:0 1px 2px rgba(0,0,0,.06)}}
-.s2-meta{{font-size:.75em;color:#9ca3af}}
-.s1-list{{list-style:none;padding:0}}
-.s1-list li{{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}}
-.summary-box{{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:0 8px 8px 0;padding:.75em 1em;margin-bottom:1.25em;font-size:.9em;color:#3730a3;line-height:1.7}}
-</style></head>
+*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
+body {{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}}
+
+/* ─ ヘッダー ─ */
+.site-header {{
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  color: #fff;
+  padding: 1.25em 1em .9em;
+}}
+.site-header h1 {{
+  font-size: 1.15em;
+  font-weight: 700;
+  letter-spacing: .03em;
+}}
+.site-header .date {{
+  font-size: .8em;
+  opacity: .8;
+  margin-top: .15em;
+}}
+
+/* ─ 統計バー ─ */
+.stats-bar {{
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}}
+.stat {{ display: flex; align-items: center; gap: .3em; }}
+.stat-star  {{ color: #f59e0b; font-weight: 700; }}
+.stat-star2 {{ color: #94a3b8; font-weight: 700; }}
+.stat-sep   {{ color: #d1d5db; }}
+
+/* ─ コンテンツ ─ */
+.content {{ max-width: 680px; margin: 0 auto; padding: 1em; }}
+
+/* ─ サマリー ─ */
+.summary-box {{
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}}
+.summary-icon {{ font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }}
+
+/* ─ セクション見出し ─ */
+.section-heading {{
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}}
+.section-heading .count {{
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}}
+
+/* ─ ★★★ カード ─ */
+.card {{
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+}}
+.card:hover {{ box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }}
+.card-header {{
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}}
+.star-badge {{
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}}
+.card-title {{
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}}
+.card-title a {{ color: #111827; text-decoration: none; }}
+.card-title a:hover {{ color: #4f46e5; text-decoration: underline; }}
+.card-source {{
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}}
+.card-comment {{
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}}
+
+/* ─ ★★ リスト ─ */
+.s2-list {{ list-style: none; }}
+.s2-item {{
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}}
+.s2-title {{
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}}
+.s2-title:hover {{ color: #4f46e5; text-decoration: underline; }}
+.s2-meta {{
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}}
+.s2-source {{ font-size: .75em; color: #9ca3af; }}
+
+/* ─ ★ その他 ─ */
+.s1-list {{ list-style: none; }}
+.s1-item {{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}}
+.s1-item a {{ color: #374151; text-decoration: none; flex: 1; }}
+.s1-item a:hover {{ color: #4f46e5; text-decoration: underline; }}
+.s1-meta {{
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}}
+.s1-source {{ font-size: .7em; color: #9ca3af; }}
+
+a {{ color: #4f46e5; }}
+</style>
+</head>
 <body>
-<h1>📰 トレンドニュース {TODAY}</h1>
-{summary_html}
-<h2>★★★ 注目記事</h2>{cards}
-<h2>★★ 気になる記事</h2><ul class="s2-list">{s2items}</ul>
-<h2>★ その他</h2><ul class="s1-list">{s1items}</ul>
-</body></html>"""
+
+<header class="site-header">
+  <h1>📰 AIキュレーター</h1>
+  <div class="date">{TODAY} のトレンドニュース</div>
+</header>
+
+{stats_html}
+
+<div class="content">
+  {summary_html}
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">{len(s3)}</span></div>
+  {cards}
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">{len(s2)}</span></div>
+  <ul class="s2-list">{s2items}</ul>
+
+  <div class="section-heading">★ その他 <span class="count">{len(s1)}</span></div>
+  <ul class="s1-list">{s1items}</ul>
+</div>
+
+</body>
+</html>"""
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
