@@ -235,6 +235,77 @@ def evaluate(articles):
     print(f'[INFO] Keyword evaluated: {len(result)} articles')
     return result
 
+# ─── Per-article comments ─────────────────────────────────────────────────────
+
+def _comment_fallback(a):
+    """API失敗時：ソース情報から定型コメントを生成"""
+    src = a.get('source', '')
+    cat = a.get('category', '')
+    n = re.search(r'\((\d+)\)', src)
+    count = n.group(1) if n else None
+    if 'はてブ' in src:
+        return f'はてブ{count}件の注目エントリ。{cat}分野で広く読まれている。' if count else f'{cat}分野のはてブ人気記事。'
+    if 'HN' in src:
+        return f'Hacker Newsで話題。{cat}領域の海外動向として注目。'
+    if 'Reddit' in src:
+        return f'Reddit {count}upvotes。{cat}関連のコミュニティ反応が大きい。' if count else f'{cat}分野の海外トレンド。'
+    if 'Zenn' in src or 'Qiita' in src:
+        return f'日本人エンジニアによる{cat}の実践的な解説記事。'
+    return f'{cat}分野の注目記事。'
+
+def generate_comments(s3):
+    """★★★ 記事に一言コメントを付与（GitHub Models、失敗時は定型文）"""
+    if not s3:
+        return s3
+    needs = [a for a in s3 if not a.get('comment')]
+    if not needs:
+        return s3
+    if GITHUB_TOKEN:
+        numbered = '\n'.join(
+            f'{i+1}. [{a.get("category","")}] {a["title"]}'
+            for i, a in enumerate(needs)
+        )
+        prompt = f"""以下の注目記事（★★★）それぞれに、15〜30文字の日本語で一言コメントをつけてください。
+記事の価値・注目ポイント・読むべき理由を簡潔に。
+
+記事：
+{numbered}
+
+出力形式（JSONのみ、説明不要）：
+[{{"index": 1, "comment": "一言コメント"}}, {{"index": 2, "comment": "一言コメント"}}]"""
+        payload = json.dumps({
+            'model': 'gpt-4o-mini',
+            'messages': [{'role': 'user', 'content': prompt}],
+            'temperature': 0.3,
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            'https://models.inference.ai.azure.com/chat/completions',
+            data=payload,
+            headers={'Authorization': f'Bearer {GITHUB_TOKEN}', 'Content-Type': 'application/json'},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                result = json.loads(r.read())
+                content = result['choices'][0]['message']['content']
+                m = re.search(r'\[.*\]', content, re.DOTALL)
+                if m:
+                    comments = json.loads(m.group())
+                    cmap = {c['index']: c.get('comment', '') for c in comments}
+                    for i, a in enumerate(needs, 1):
+                        if cmap.get(i):
+                            a['comment'] = cmap[i]
+                    # APIで取得できたものはここで終わり
+                    still_empty = [a for a in needs if not a.get('comment')]
+                    for a in still_empty:
+                        a['comment'] = _comment_fallback(a)
+                    return s3
+        except Exception as e:
+            print(f'[WARN] Comment generation failed: {e}')
+    # API失敗 → 全件フォールバック
+    for a in needs:
+        a['comment'] = _comment_fallback(a)
+    return s3
+
 # ─── Summary ──────────────────────────────────────────────────────────────────
 
 def _summary_fallback(s3):
@@ -380,6 +451,9 @@ def main():
     s2 = rated.get('★★', [])
     s1 = rated.get('★', [])
     print(f'★★★:{len(s3)}  ★★:{len(s2)}  ★:{len(s1)}')
+
+    print('Generating comments for ★★★ articles...')
+    s3 = generate_comments(s3)
 
     print('Generating summary...')
     summary = generate_summary(s3)
