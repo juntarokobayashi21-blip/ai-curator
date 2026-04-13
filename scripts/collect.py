@@ -7,9 +7,9 @@ GitHub Models (gpt-4o-mini) で無料AI評価
 import json
 import os
 import re
-import subprocess
 import pathlib
 import urllib.request
+import urllib.error
 from datetime import datetime, timezone, timedelta
 
 # .env 読み込み
@@ -453,19 +453,70 @@ body {{
 
 /* ─ ヘッダー ─ */
 .site-header {{
-  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}}
+.site-header::before {{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}}
+.header-inner {{
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}}
+.header-eyebrow {{
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}}
+.header-brand {{
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}}
+.brand-ai {{
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}}
+.brand-name {{
   color: #fff;
-  padding: 1.25em 1em .9em;
 }}
-.site-header h1 {{
-  font-size: 1.15em;
-  font-weight: 700;
-  letter-spacing: .03em;
-}}
-.site-header .date {{
+.header-tagline {{
   font-size: .8em;
-  opacity: .8;
-  margin-top: .15em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}}
+.header-date {{
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
 }}
 
 /* ─ 統計バー ─ */
@@ -639,8 +690,14 @@ a {{ color: #4f46e5; }}
 <body>
 
 <header class="site-header">
-  <h1>📰 AIキュレーター</h1>
-  <div class="date">{TODAY} のトレンドニュース</div>
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 {TODAY}</div>
+  </div>
 </header>
 
 {stats_html}
@@ -766,16 +823,36 @@ def notify():
         items += line
     msg = header + items + footer
 
-    r = subprocess.run([
-        'curl', '-s', '-w', '\n%{http_code}',
-        '-X', 'POST', DISCORD_WEBHOOK,
-        '-F', f'payload_json={json.dumps({"content": msg})}',
-        '-F', f'file1=@{MD_PATH}',
-    ], capture_output=True, text=True)
-    *body_lines, status = r.stdout.strip().splitlines()
-    print(f'Discord: HTTP {status}')
-    if status != '200':
-        print(f'Discord error: {"".join(body_lines)}')
+    boundary = 'DiscordBoundary7a3f'
+    payload = json.dumps({'content': msg}).encode('utf-8')
+    md_bytes = pathlib.Path(MD_PATH).read_bytes()
+    md_name  = pathlib.Path(MD_PATH).name
+
+    body = (
+        f'--{boundary}\r\n'
+        f'Content-Disposition: form-data; name="payload_json"\r\n'
+        f'Content-Type: application/json\r\n\r\n'
+    ).encode() + payload + b'\r\n'
+    body += (
+        f'--{boundary}\r\n'
+        f'Content-Disposition: form-data; name="file1"; filename="{md_name}"\r\n'
+        f'Content-Type: text/markdown; charset=utf-8\r\n\r\n'
+    ).encode() + md_bytes + f'\r\n--{boundary}--\r\n'.encode()
+
+    req = urllib.request.Request(
+        DISCORD_WEBHOOK, data=body, method='POST',
+        headers={
+            'Content-Type': f'multipart/form-data; boundary={boundary}',
+            'User-Agent': 'DiscordBot (ai-curator, 1.0)',
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            print(f'Discord: HTTP {r.status}')
+    except urllib.error.HTTPError as e:
+        body_err = e.read().decode('utf-8', errors='replace')
+        print(f'Discord: HTTP {e.code}')
+        print(f'Discord error: {body_err}')
 
 
 if __name__ == '__main__':
