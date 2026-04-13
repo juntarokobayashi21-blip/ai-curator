@@ -60,6 +60,7 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
 - 各記事に ★★★ / ★★ / ★ を付ける（複数ソース記事は優遇）
 - カテゴリ（AI開発・セキュリティ・個人開発など）を分類
 - ★★★の記事は特に詳しくコメントを添える
+- 全体の傾向を踏まえ、**3〜4文の今日のまとめ**を日本語で書く（どのカテゴリが多かったか・今日の大きなトピックは何か・読者へのひと言）
 
 ### ステップ4: 保存
 
@@ -67,6 +68,10 @@ CLAUDE.mdを読み込み、興味領域と評価基準を把握する。
 
 ```markdown
 # トレンドニュース YYYY-MM-DD
+
+## 今日のまとめ
+
+本日はAI開発関連の記事が多く、特にXXXが注目を集めた。セキュリティ分野では〜。（3〜4文）
 
 ## ★★★ 注目記事
 
@@ -139,6 +144,9 @@ def source_html(src):
         return f'{sources_part}{badge_html}'
     return src
 
+summary_m = re.search(r'## 今日のまとめ\n\n(.+?)(?=\n\n## )', md, re.DOTALL)
+summary_text = summary_m.group(1).strip() if summary_m else ''
+
 s3 = re.search(r'## ★★★ 注目記事\n(.*?)(?=\n## )', md, re.DOTALL)
 s2 = re.search(r'## ★★ 気になる記事\n(.*?)(?=\n## )', md, re.DOTALL)
 s1 = re.search(r'## ★ その他\n(.*?)$', md, re.DOTALL)
@@ -195,10 +203,12 @@ html = f"""<!DOCTYPE html>
   .s2-meta{{font-size:.75em;color:#9ca3af}}
   .s1-list{{list-style:none;padding:0}}
   .s1-list li{{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}}
+  .summary-box{{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:0 8px 8px 0;padding:.75em 1em;margin-bottom:1.25em;font-size:.9em;color:#3730a3;line-height:1.7}}
 </style>
 </head>
 <body>
 <h1>📰 トレンドニュース {DATE_FMT}</h1>
+{f'<div class="summary-box">{summary_text}</div>' if summary_text else ''}
 <h2>★★★ 注目記事</h2>
 {s3_html}
 <h2>★★ 気になる記事</h2>
