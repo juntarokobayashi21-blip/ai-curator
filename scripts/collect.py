@@ -26,6 +26,7 @@ DATE  = datetime.now(JST).strftime('%Y%m%d')
 
 GITHUB_TOKEN      = os.environ.get('GITHUB_TOKEN', '')
 DISCORD_WEBHOOK   = os.environ.get('DISCORD_WEBHOOK_URL', '')
+SKIP_DISCORD      = os.environ.get('SKIP_DISCORD', '') == '1'
 GITHUB_PAGES_BASE = 'https://juntarokobayashi21-blip.github.io/ai-curator'
 MD_PATH   = f'ideas/daily/{DATE}-trend.md'
 HTML_PATH = f'ideas/daily/{DATE}-trend.html'
@@ -448,33 +449,60 @@ def main():
     print(f'Saved: {HTML_PATH}')
 
     # Discord
-    if DISCORD_WEBHOOK:
-        html_url = f'{GITHUB_PAGES_BASE}/ideas/daily/{DATE}-trend.html'
-        header = (f'**【AIキュレーター】{TODAY} トレンドニュース**\n'
-                  f'★★★ 注目記事 {len(s3)}件\n\n')
-        footer = f'\n🌐 {html_url}\n📄 {MD_PATH}'
-        items = ''
-        for a in s3:
-            line = f'▶ {a["title"]}\n'
-            if len(header) + len(items) + len(line) + len(footer) > 1900:
-                items += f'…他{len(s3) - items.count("▶")}件\n'
-                break
-            items += line
-        msg = header + items + footer
-        r = subprocess.run([
-            'curl', '-s', '-w', '\n%{http_code}',
-            '-X', 'POST', DISCORD_WEBHOOK,
-            '-F', f'payload_json={json.dumps({"content": msg})}',
-            '-F', f'file1=@{MD_PATH}',
-        ], capture_output=True, text=True)
-        *body_lines, status = r.stdout.strip().splitlines()
-        print(f'Discord: HTTP {status}')
-        if status != '200':
-            print(f'Discord error: {"".join(body_lines)}')
+    if SKIP_DISCORD:
+        print('Discord: skipped (SKIP_DISCORD=1)')
     else:
-        print('Discord: skipped (no webhook)')
+        notify()
 
     print('=== Done ===')
 
+def notify():
+    """生成済みのMDファイルからDiscord通知だけ送る"""
+    if not DISCORD_WEBHOOK:
+        print('Discord: skipped (no webhook)')
+        return
+    if not pathlib.Path(MD_PATH).exists():
+        print(f'[WARN] {MD_PATH} not found, skipping notification')
+        return
+
+    # ★★★ のタイトルをMDから抽出
+    md = pathlib.Path(MD_PATH).read_text(encoding='utf-8')
+    s3_titles = []
+    m = re.search(r'## ★★★ 注目記事\n(.*?)(?=\n## |\Z)', md, re.DOTALL)
+    if m:
+        for line in m.group(1).splitlines():
+            tm = re.match(r'\|\s*\[(.+?)\]', line)
+            if tm:
+                s3_titles.append(tm.group(1))
+
+    html_url = f'{GITHUB_PAGES_BASE}/ideas/daily/{DATE}-trend.html'
+    header = (f'**【AIキュレーター】{TODAY} トレンドニュース**\n'
+              f'★★★ 注目記事 {len(s3_titles)}件\n\n')
+    footer = f'\n🌐 {html_url}\n📄 {MD_PATH}'
+    items = ''
+    for title in s3_titles:
+        line = f'▶ {title}\n'
+        if len(header) + len(items) + len(line) + len(footer) > 1900:
+            items += f'…他{len(s3_titles) - items.count("▶")}件\n'
+            break
+        items += line
+    msg = header + items + footer
+
+    r = subprocess.run([
+        'curl', '-s', '-w', '\n%{http_code}',
+        '-X', 'POST', DISCORD_WEBHOOK,
+        '-F', f'payload_json={json.dumps({"content": msg})}',
+        '-F', f'file1=@{MD_PATH}',
+    ], capture_output=True, text=True)
+    *body_lines, status = r.stdout.strip().splitlines()
+    print(f'Discord: HTTP {status}')
+    if status != '200':
+        print(f'Discord error: {"".join(body_lines)}')
+
+
 if __name__ == '__main__':
-    main()
+    import sys
+    if '--notify-only' in sys.argv:
+        notify()
+    else:
+        main()

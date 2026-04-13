@@ -24,13 +24,13 @@ jobs:
       - name: Run collect script
         env:
           GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SKIP_DISCORD: '1'
         run: python scripts/collect.py
 
       - name: Run weekly summary (月曜のみ)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SKIP_DISCORD: '1'
         run: |
           if [ "$(date +%u)" = "1" ]; then
             echo "月曜日: 週次まとめを実行します"
@@ -46,3 +46,12 @@ jobs:
           git add ideas/
           git diff --staged --quiet && echo "No changes" || \
             (git commit -m "chore: auto-collect $(date +%Y-%m-%d)" && git push)
+
+      - name: Wait for GitHub Pages deployment
+        run: sleep 180
+
+      - name: Send Discord notification
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python scripts/collect.py --notify-only
