@@ -389,15 +389,13 @@ def build_html(s3, s2, s1, summary=''):
     for a in s3:
         color = cat_color(a.get('category', ''))
         img_html = (
-            f'<a href="{a["url"]}" tabindex="-1">'
+            f'<a href="{a["url"]}" class="card-img-wrap" tabindex="-1">'
             f'<img class="card-img" src="{a["image"]}" alt="" loading="lazy" '
-            f'onerror="this.closest(\'.card-img-wrap\').remove()">'
+            f'onerror="this.remove()">'
             f'</a>'
         ) if a.get('image') else ''
-        img_wrap = f'<div class="card-img-wrap">{img_html}</div>' if img_html else ''
         cards += (
             f'<div class="card" style="border-left:4px solid {color}">'
-            f'{img_wrap}'
             f'<div class="card-body">'
             f'<div class="card-header">'
             f'<span class="star-badge">★★★</span>'
@@ -407,6 +405,7 @@ def build_html(s3, s2, s1, summary=''):
             f'<div class="card-source">{a["source"]}</div>'
             f'<div class="card-comment">{fmt_comment(a.get("comment",""))}</div>'
             f'</div>'
+            f'{img_html}'
             f'</div>'
         )
 
@@ -531,21 +530,26 @@ body {{
   margin-bottom: .85em;
   box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
   transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
 }}
 .card:hover {{ box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }}
+.card-body {{ flex: 1; min-width: 0; }}
 .card-img-wrap {{
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: .75em;
-  max-height: 180px;
+  align-self: flex-start;
 }}
 .card-img {{
-  width: 100%;
-  height: 180px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
   display: block;
 }}
-.card-body {{ }}
 .card-header {{
   display: flex;
   align-items: center;
