@@ -3,281 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AIキュレーター | 2026-04-14</title>
+<title>トレンドニュース 2026-04-14</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
-  background: #f0f2f5;
-  color: #1f2937;
-  line-height: 1.65;
-  padding-bottom: 3em;
-}
-
-/* ─ ヘッダー ─ */
-.site-header {
-  background: #0d0b1e;
-  background-image:
-    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
-  padding: 2em 1em 1.75em;
-  position: relative;
-  overflow: hidden;
-}
-.site-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
-  background-size: 22px 22px;
-  pointer-events: none;
-}
-.header-inner {
-  position: relative;
-  z-index: 1;
-  max-width: 680px;
-  margin: 0 auto;
-}
-.header-eyebrow {
-  font-size: .68em;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(167,139,250,.85);
-  margin-bottom: .6em;
-}
-.header-brand {
-  font-size: 2.1em;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1;
-  margin-bottom: .45em;
-}
-.brand-ai {
-  background: linear-gradient(90deg, #a78bfa, #60a5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-right: .04em;
-}
-.brand-name {
-  color: #fff;
-}
-.header-tagline {
-  font-size: .8em;
-  color: rgba(255,255,255,.4);
-  margin-bottom: 1.1em;
-  letter-spacing: .01em;
-}
-.header-date {
-  display: inline-flex;
-  align-items: center;
-  gap: .4em;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.13);
-  color: rgba(255,255,255,.75);
-  font-size: .75em;
-  padding: .35em 1em;
-  border-radius: 99px;
-  letter-spacing: .04em;
-}
-
-/* ─ 統計バー ─ */
-.stats-bar {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  padding: .6em 1em;
-  font-size: .8em;
-  color: #6b7280;
-  display: flex;
-  gap: .5em;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.stat { display: flex; align-items: center; gap: .3em; }
-.stat-star  { color: #f59e0b; font-weight: 700; }
-.stat-star2 { color: #94a3b8; font-weight: 700; }
-.stat-sep   { color: #d1d5db; }
-
-/* ─ コンテンツ ─ */
-.content { max-width: 680px; margin: 0 auto; padding: 1em; }
-
-/* ─ サマリー ─ */
-.summary-box {
-  display: flex;
-  gap: .75em;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 12px;
-  padding: 1em;
-  margin-bottom: 1.5em;
-  font-size: .9em;
-  color: #3730a3;
-  line-height: 1.75;
-}
-.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
-
-/* ─ セクション見出し ─ */
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: .5em;
-  margin: 1.75em 0 .85em;
-  font-size: .95em;
-  font-weight: 700;
-  color: #374151;
-}
-.section-heading .count {
-  background: #e5e7eb;
-  color: #6b7280;
-  font-size: .75em;
-  font-weight: 600;
-  padding: 1px 8px;
-  border-radius: 99px;
-}
-
-/* ─ ★★★ カード ─ */
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1em 1em 1em 1.1em;
-  margin-bottom: .85em;
-  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
-  transition: box-shadow .15s;
-  display: flex;
-  gap: .85em;
-  align-items: flex-start;
-}
-.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
-.card-body { flex: 1; min-width: 0; }
-.card-img-wrap {
-  flex-shrink: 0;
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  align-self: flex-start;
-}
-.card-img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  display: block;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: .5em;
-  margin-bottom: .5em;
-}
-.star-badge {
-  font-size: .7em;
-  color: #f59e0b;
-  font-weight: 700;
-  letter-spacing: -.5px;
-}
-.card-title {
-  font-size: 1em;
-  font-weight: 700;
-  margin-bottom: .35em;
-  line-height: 1.45;
-}
-.card-title a { color: #111827; text-decoration: none; }
-.card-title a:hover { color: #4f46e5; text-decoration: underline; }
-.card-source {
-  font-size: .75em;
-  color: #9ca3af;
-  margin-bottom: .55em;
-}
-.card-comment {
-  font-size: .875em;
-  color: #4b5563;
-  line-height: 1.7;
-  padding-top: .55em;
-  border-top: 1px solid #f3f4f6;
-}
-
-/* ─ ★★ リスト ─ */
-.s2-list { list-style: none; }
-.s2-item {
-  background: #fff;
-  border-radius: 10px;
-  padding: .8em 1em .8em 1.1em;
-  margin-bottom: .5em;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06);
-}
-.s2-title {
-  display: block;
-  font-size: .92em;
-  font-weight: 600;
-  color: #1f2937;
-  text-decoration: none;
-  margin-bottom: .35em;
-  line-height: 1.45;
-}
-.s2-title:hover { color: #4f46e5; text-decoration: underline; }
-.s2-meta {
-  display: flex;
-  align-items: center;
-  gap: .4em;
-  flex-wrap: wrap;
-}
-.s2-source { font-size: .75em; color: #9ca3af; }
-
-/* ─ ★ その他 ─ */
-.s1-list { list-style: none; }
-.s1-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: .75em;
-  padding: .55em 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: .85em;
-}
-.s1-item a { color: #374151; text-decoration: none; flex: 1; }
-.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
-.s1-meta {
-  display: flex;
-  align-items: center;
-  gap: .3em;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-.s1-source { font-size: .7em; color: #9ca3af; }
-
-a { color: #4f46e5; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f4f6;color:#1f2937;padding:1em;line-height:1.6}
+  h1{font-size:1.2em;color:#111827;margin:.5em 0 1em;padding-bottom:.4em;border-bottom:2px solid #4f46e5}
+  h2{font-size:1em;margin:1.5em 0 .75em;color:#374151}
+  a{color:#4f46e5;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .card{background:#fff;border-radius:12px;padding:1em;margin-bottom:.75em;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .card-title{font-size:1em;font-weight:bold;margin-bottom:.4em}
+  .card-meta{font-size:.8em;color:#6b7280;margin-bottom:.5em}
+  .card-comment{font-size:.875em;color:#374151}
+  .s2-list{list-style:none;padding:0}
+  .s2-item{background:#fff;border-radius:8px;padding:.75em 1em;margin-bottom:.5em;font-size:.9em;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .s2-meta{font-size:.75em;color:#9ca3af}
+  .s1-list{list-style:none;padding:0}
+  .s1-list li{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}
+  .summary-box{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:0 8px 8px 0;padding:.75em 1em;margin-bottom:1.25em;font-size:.9em;color:#3730a3;line-height:1.7}
 </style>
 </head>
 <body>
-
-<header class="site-header">
-  <div class="header-inner">
-    <div class="header-eyebrow">✦ Daily Tech Digest</div>
-    <div class="header-brand">
-      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
-    </div>
-    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
-    <div class="header-date">📅 2026-04-14</div>
-  </div>
-</header>
-
-<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 6件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 6件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
-
-<div class="content">
-  <div class="summary-box"><div class="summary-icon">📋</div><div>今日の注目ニュースでは、AI開発に関するトピックが特に多く見られました。中でも、SnapStateやGAIAのような新しいフレームワークやツールが登場し、AIエージェントの開発がさらに進化していることが印象的です。また、サイバーセキュリティにおいても重要な脆弱性が報告されており、両分野の連携が求められています。これらの情報を通じて、最新技術の動向を把握し、自身の業務や研究に活かすための洞察を得ることができるでしょう。</div></div>
-
-  <div class="section-heading">★★★ 注目記事 <span class="count">6</span></div>
-  <div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://snapstate.dev">SnapState - Persistent state for AI agent workflows</a></div><div class="card-source">HN</div><div class="card-comment">AIエージェントのワークフローにおける持続的な状態管理の必要性が高まっています。<br>SnapStateは、AIエージェントがより効率的に作業を遂行できるように設計されています。<br>この技術は、AIの実用化を進める上で重要なステップとなるでしょう。</div></div></div><div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://ndaybench.winfunc.com">N-Day-Bench – Can LLMs find real vulnerabilities in real codebases?</a></div><div class="card-source">HN</div><div class="card-comment">サイバーセキュリティにおいて、LLM（大規模言語モデル）の活用が注目されています。<br>N-Day-Benchは、実際のコードベースにおける脆弱性を特定する能力を評価する新しい手法です。<br>この研究は、AIがセキュリティ分野にどのように寄与できるかを示す重要な事例です。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://amd-gaia.ai/docs">GAIA – Open-source framework for building AI agents that run on local hardware</a></div><div class="card-source">HN</div><div class="card-comment">ローカルハードウェア上でAIエージェントを構築するためのオープンソースフレームワークが必要とされています。<br>GAIAは、その柔軟性と拡張性から多くの開発者に支持される可能性があります。<br>このフレームワークを利用することで、AI開発の敷居が下がるでしょう。</div></div><a href="https://amd-gaia.ai/docs" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://amd-fe836e11.mintlify.app/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DGetting%2BStarted%26title%3DWelcome%26description%3DBuild%2Blocal%2BAI%2Bagents%2Bin%2BPython%2Band%2BC%252B%252B%2Bfor%2BAMD%2Bhardware.%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Famd-fe836e11%252FPgPhi3UrqFX2lV53%252Fassets%252Ffavicon.ico%253Ffit%253Dmax%2526auto%253Dformat%2526n%253DPgPhi3UrqFX2lV53%2526q%253D85%2526s%253D77bcf8b2d70613766cc02f16b0e208a0%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Famd-fe836e11%252FPgPhi3UrqFX2lV53%252Fassets%252Ffavicon.ico%253Ffit%253Dmax%2526auto%253Dformat%2526n%253DPgPhi3UrqFX2lV53%2526q%253D85%2526s%253D77bcf8b2d70613766cc02f16b0e208a0%26primaryColor%3D%2523ED1C24%26lightColor%3D%2523F4484D%26darkColor%3D%2523C8171E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0a0c&amp;w=1200&amp;q=100" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/mtec_blog/articles/288cab828f6773">GitHub Copilot CLI で分析業務を半自動化する（フェーズ分割×サブエージェント×シェルスクリプトの設計）</a></div><div class="card-source">Zenn</div><div class="card-comment">分析業務の効率化が求められる中、GitHub Copilot CLIが新たな解決策を提示しています。<br>フェーズ分割やサブエージェントを活用することで、作業の半自動化が可能になる点が注目です。<br>この手法を取り入れることで、開発者の生産性が向上することが期待されます。</div></div><a href="https://zenn.dev/mtec_blog/articles/288cab828f6773" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--BnCfJ5ai--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:GitHub%2520Copilot%2520CLI%2520%25E3%2581%25A7%25E5%2588%2586%25E6%259E%2590%25E6%25A5%25AD%25E5%258B%2599%25E3%2582%2592%25E5%258D%258A%25E8%2587%25AA%25E5%258B%2595%25E5%258C%2596%25E3%2581%2599%25E3%2582%258B%25EF%25BC%2588%25E3%2583%2595%25E3%2582%25A7%25E3%2583%25BC%25E3%2582%25BA%25E5%2588%2586%25E5%2589%25B2%25C3%2597%25E3%2582%25B5%25E3%2583%2596%25E3%2582%25A8%25E3%2583%25BC%25E3%2582%25B8%25E3%2582%25A7%25E3%2583%25B3%25E3%2583%2588%25C3%2597%25E3%2582%25B7%25E3%2582%25A7%25E3%2583%25AB%25E3%2582%25B9%25E3%2582%25AF%25E3%2583%25AA%25E3%2583%2597%25E3%2583%2588%25E3%2581%25AE%25E8%25A8%25AD%25E8%25A8%2588%25EF%25BC%2589%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:K.%2520SUZUKI%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzVlZDQ4NjBiZWIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:MTEC%2520Tech%2520Blog%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly96ZW5uLWRldi5naXRodWIuaW8vZGVmYXVsdC1hdmF0YXJzL2Rhcmsvay5wbmc=%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://zenn.dev/ashunar0/articles/108d06e3f99efb">axiosで発見された重大な脆弱性 - 2026.04.12</a></div><div class="card-source">Zenn</div><div class="card-comment">axiosライブラリにおいて重大な脆弱性が発見され、開発者への影響が懸念されています。<br>この脆弱性は、セキュリティ対策の重要性を再認識させるものです。<br>新たな脅威に対処するために、最新情報を把握しておくことが必要です。</div></div><a href="https://zenn.dev/ashunar0/articles/108d06e3f99efb" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--uwwZJeTd--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:axios%25E3%2581%25A7%25E7%2599%25BA%25E8%25A6%258B%25E3%2581%2595%25E3%2582%258C%25E3%2581%259F%25E9%2587%258D%25E5%25A4%25A7%25E3%2581%25AA%25E8%2584%2586%25E5%25BC%25B1%25E6%2580%25A7%2520-%25202026.04.12%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:%25E3%2581%2582%25E3%2581%2595%25E3%2581%25B2%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzZhN2JkYzMxMjIuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/mh4gf/articles/claude-code-multi-session-job-queue">Claude Codeのマルチセッション管理にジョブキューの概念を取り入れる</a></div><div class="card-source">Zenn</div><div class="card-comment">Claude Codeがマルチセッション管理にジョブキューの概念を取り入れることで、効率的な処理が可能になります。<br>これは、複雑なタスクを管理する上での革新的なアプローチです。<br>この進展は、AIエージェントの運用をさらに効果的にするでしょう。</div></div><a href="https://zenn.dev/mh4gf/articles/claude-code-multi-session-job-queue" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--ELccJ4qT--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Claude%2520Code%25E3%2581%25AE%25E3%2583%259E%25E3%2583%25AB%25E3%2583%2581%25E3%2582%25BB%25E3%2583%2583%25E3%2582%25B7%25E3%2583%25A7%25E3%2583%25B3%25E7%25AE%25A1%25E7%2590%2586%25E3%2581%25AB%25E3%2582%25B8%25E3%2583%25A7%25E3%2583%2596%25E3%2582%25AD%25E3%2583%25A5%25E3%2583%25BC%25E3%2581%25AE%25E6%25A6%2582%25E5%25BF%25B5%25E3%2582%2592%25E5%258F%2596%25E3%2582%258A%25E5%2585%25A5%25E3%2582%258C%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Hirotaka%2520Miyagi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzU1OTAwOGYzMmYuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div>
-
-  <div class="section-heading">★★ 気になる記事 <span class="count">6</span></div>
-  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiakFVX3lxTE5Demd2WE1RUVlxQlA4MlVLOG9CejlXZDNjYjRFN3pkNVdIWVdpMmhWYndqQ1plMXljYXkxb2JuZHg3WEt4RHhTRmtWZUZ3ZzZBT2dZYUJnb3ZhaE80VUF1blRGUF8teDJoQ2c?oc=5">PKSHA、クレディセゾンとAI審査モデルを共同開発ー金融向けAIスコアリング技術を提供 - PR TIMES</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxQa2k5enI4cEtQYjdOUW1XVTFDTkdIY3VSNk1ra0l4VlFNeGdIR2pOSzEzblZnUm9FdnZVdlc1Q3ItNFltTFh6M3ZKZDZmZFFRR0duM21MOEVKUFdReG1lUkMyZ1JJS2s0eVRBTGo5SlpkZEVQXzRvRl81ZlpwN0pFYVNXNlpydEtLRV9YZFYwaEJTT3VPbExZRm4tY1VVTVJjbURaNGlsODF6S2E4RGtyNFFn?oc=5">「28年に能力1000倍」 マイクロソフトAIトップ、 指数関数的成長の必然を語る - MITテクノロジーレビュー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9meGd0X0V4SWNSYUVtMXRhZGF6R3pFSnVYcnpYUWZjRHE0bXBidkJpR1ZBQ0NuZWpfMFNTbDRWSTU2T1hPQ0FNbEV5M3BkTndpdWNseWV3dkhUTWh6UUxqRFRKVnNqZjl3RjVnUQ?oc=5">新卒ビジネス職を1カ月で技術者へ転換、TOKIUM AI時代は皆「越境人材」 - 日経クロステック</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMid0FVX3lxTFBmeEIxdzQycVBvMl9UaENObVRkb1FacVpJdktBdWt2c3F5aWVseHZhRmpPcG5VbVhBNHZBZ3BGZ2xBTHMtZVg1blItbWZmOXR5TGZvc2t0dEJIb1pudjl3VkhFenc0cTYzZXFZUG5PZDBYUkxVeFFr0gF8QVVfeXFMTlVGS1pDN2NoVXRxTjdGeDFDUVh4MXdkYzhIR1cydlY1UW40b3paZEZKcFFxcGo0QnRBcDVibFNYOHIwd3plSmVZMVhDTlN2bWFYMGNhcDhZTFlSS0Ryb2FmMG9OVVhGQ1JLVDVCNkZqSTBlczZJOWpqblpuZw?oc=5">AI導入を成果に変えるために必要なビジネストランスレーターの役割とは - ｄメニューニュース</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQM2sxNzlTYTlzYU8xS2d0Yy1xWGM5WkNTRUlwVXpVT0kzUWNldWszQWxxZUJ2a3c2Z1RMRjNiUm42OHBSWmI4cW1sLXJ5Vm1iNk1qeEVIM1dUNmVUUW54TGxBRl9LSGNyTUlfSnF3WWFRLU5KckIyVlNaSUVsMmZqeQ?oc=5">AIにおける次の大きなトレンドは「ダークファクトリー」 - Business Insider Japan</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE9EVUVhaGlibHg5UWxIYnBFUDZpd05RQS1jeDNUNnU2TWZ6bzF6Q05fZmp1aDhVZ2lVZTFaamdKZ2YyR05sb0VLSXNfMm1Zanc?oc=5">富士通が1.4ナノAI半導体の製造をラピダスに委託、AI半導体国産化に向け - ビジネス+IT</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div></li></ul>
-
-  <div class="section-heading">★ その他 <span class="count">0</span></div>
-  <ul class="s1-list"></ul>
-</div>
-
-</body>
-</html>
+<h1>📰 トレンドニュース 2026-04-14</h1>
+<div class="summary-box">2026年4月14日はAI開発分野が圧倒的な主役を占め、Anthropicの非公開最強モデル「Claude Mythos」（SWE-bench 93.9%）の存在や、GPT-5.4・Gemini 3.1・Llama 4が同月競合する史上最密集なモデルリリース期であることが際立った。セキュリティ面ではLiteLLMブリーチやWhatsApp偽iOSアプリによるスパイウェア被害が続き、AIインフラへの攻撃が現実化している点が要注意。Tesla Cybercabの量産開始でロボタクシー実用化フェーズが具体化し、AI開発ツールの実践活用（GitHub Copilot CLI/Claude Code）記事も充実した、エンジニアが今すぐ読むべき濃厚な1日。</div>
+<h2>★★★ 注目記事</h2>
+<div class="card"><div class="card-title"><a href="https://tech-insider.org/chatgpt-vs-claude-vs-deepseek-vs-gemini-2026/">Claude Mythos – Anthropic最強モデル登場、SWE-bench 93.9%もProject Glasswingで50組織限定</a></div><div class="card-meta">WebSearch &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">GPT-5.4 ProやGemini 3.1 Ultraを超え、SWE-bench Verified 93.9%・GPQA Diamond 94.6%を達成。ただし「Project Glasswing」として50組織のみに限定公開中。一般リリース時のインパクトは計り知れない。</div></div><div class="card"><div class="card-title"><a href="https://www.buildfastwithai.com/blogs/best-ai-models-april-2026">2026年4月 AIフロンティア乱立 – GPT-5.4 / Gemini 3.1 Ultra / Llama 4 / Claude Sonnet 4.6が激突</a></div><div class="card-meta">WebSearch &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">3月〜4月は「史上最密集のモデルリリース月」。GPT-5.4とGemini 3.1 Ultraが同スコア57点で首位並走、Llama 4 Scout/Maverick（Meta）も4/5投入。各フロンティアモデルが数ベンチマーク差に収束し、選択の難易度が急上昇。</div></div><div class="card"><div class="card-title"><a href="https://softwareengineeringdaily.com/2026/04/02/sed-news-opencode-ai-code-vs-shipped-code-and-the-litellm-breach/">LiteLLM ブリーチ – AI開発で広く使われる基盤ライブラリが侵害</a></div><div class="card-meta">WebSearch &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div><div class="card-comment">LiteLLMはOpenAI互換インターフェースとして多数のAIプロダクトが依存するライブラリ。サプライチェーン攻撃の形でAIインフラへの侵害が現実化した事例。自社プロダクトでの利用有無を即確認すること。</div></div><div class="card"><div class="card-title"><a href="https://thehackernews.com/2026/04/whatsapp-alerts-200-users-after-fake.html">WhatsApp が200ユーザーに警告 – 偽iOSアプリ経由でスパイウェア感染、イタリア企業が制裁対象に</a></div><div class="card-meta">WebSearch &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div><div class="card-comment">偽装された公式クライアントを経由して標的型スパイウェアが展開。商用スパイウェア企業（イタリア）が関与しているとして制裁手続きへ。ジャーナリストや活動家が標的とされており、ゼロデイ濫用の典型例。</div></div><div class="card"><div class="card-title"><a href="https://jidounten-lab.com/u_60567">Tesla Cybercab 量産開始（2026年4月）– ロボタクシー実用化フェーズへ突入</a></div><div class="card-meta">WebSearch &nbsp;<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">自動運転</span></div><div class="card-comment">EV販売14%減の逆風中でもテスラはロボタクシーに全力集中。Cybercabの量産化は「10兆ドル市場」への実質的な参戦宣言。Waymoとの都市規模・ビジネスモデルの違いを比較する上でも重要な節目。</div></div><div class="card"><div class="card-title"><a href="https://zenn.dev/mtec_blog/articles/288cab828f6773">GitHub Copilot CLI で分析業務を半自動化する（フェーズ分割×サブエージェント×シェルスクリプトの設計）</a></div><div class="card-meta">Zenn &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">単なる補完AIを超え、GitHub Copilot CLIをオーケストレーション基盤として活用する実践設計論。フェーズ分割とサブエージェントの組み合わせは、エージェント設計の参考になる汎用パターン。</div></div><div class="card"><div class="card-title"><a href="https://zenn.dev/mh4gf/articles/claude-code-multi-session-job-queue">Claude Codeのマルチセッション管理にジョブキューの概念を取り入れる</a></div><div class="card-meta">Zenn &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">Claude Codeを複数並列稼働させる際の競合・優先度管理をジョブキューで解決するアーキテクチャ。大規模エージェント運用を考える開発者必読の実装記事。</div></div>
+<h2>★★ 気になる記事</h2>
+<ul class="s2-list"><li class="s2-item"><a href="https://www.security-next.com/">Ivanti EPMM CVE-2026-1340 – CISA が米行政機関に緊急対応要請</a><br><span class="s2-meta">WebSearch &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></span></li><li class="s2-item"><a href="https://ndaybench.winfunc.com">N-Day-Bench – LLMはリアルコードベースで実際の脆弱性を見つけられるか？</a><br><span class="s2-meta">HN &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発 / セキュリティ</span></span></li><li class="s2-item"><a href="https://global.toyota/jp/newsroom/corporate/42703314.html">トヨタ・Waymo 自動運転の戦略的パートナーシップに合意 – 普及加速へ</a><br><span class="s2-meta">WebSearch &nbsp;<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">自動運転</span></span></li><li class="s2-item"><a href="https://atmarkit.itmedia.co.jp/ait/articles/2602/20/news054.html">ITエンジニア転職 平均年収594万円 – 2020年比+53万円、人材不足が給与押し上げ継続</a><br><span class="s2-meta">WebSearch &nbsp;<span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">キャリア/転職</span></span></li><li class="s2-item"><a href="https://amd-gaia.ai/docs">GAIA – ローカルハードウェアで動くオープンソースAIエージェントフレームワーク</a><br><span class="s2-meta">HN &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li><li class="s2-item"><a href="https://note.com/zaimo_ai/n/n9f71a6e37a51">スタートアップ資金調達サマリー 2026/4/6〜4/10 – Agentic ERP・クリエイターマーケ等22件</a><br><span class="s2-meta">WebSearch &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業の動向</span></span></li><li class="s2-item"><a href="https://wired.jp/article/tesla-fsd-japan-2026/">テスラFSD 日本で2026年内実装へ – 公道テスト同乗レポート</a><br><span class="s2-meta">WebSearch &nbsp;<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">自動運転</span></span></li></ul>
+<h2>★ その他</h2>
+<ul class="s1-list"><li><a href="https://www.ipa.go.jp/security/10threats/10threats2026.html">IPA 情報セキュリティ10大脅威2026 – 「AIの利用をめぐるサイバーリスク」が初ランクイン</a> <span style="color:#9ca3af;font-size:.85em">— WebSearch</span></li><li><a href="https://llm-stats.com/llm-updates">Google Gemma 4 / Meta Llama 4 Scout & Maverick リリース – オープンモデル世代交代</a> <span style="color:#9ca3af;font-size:.85em">— WebSearch</span></li><li><a href="https://snapstate.dev">SnapState – AIエージェントワークフローへの永続状態管理ソリューション</a> <span style="color:#9ca3af;font-size:.85em">— HN</span></li><li><a href="https://www.nomura.co.jp/wealthstyle/article/0609/">「SaaSの死」は本当か？ AI普及後もSaaSが生き残る条件とは</a> <span style="color:#9ca3af;font-size:.85em">— WebSearch</span></li><li><a href="https://www.rbbtoday.com/release/prtimes2-today/20260414/1251009.html">シンギュラボ、LLMマルチエージェント活用の社会シミュレーション ハッカソン開催（4/14〜）</a> <span style="color:#9ca3af;font-size:.85em">— WebSearch</span></li><li><a href="https://zenn.dev/ashunar0/articles/108d06e3f99efb">axios重大脆弱性発見 2026-04-12 – 開発環境への影響を確認</a> <span style="color:#9ca3af;font-size:.85em">— Zenn</span></li></ul>
+</body></html>
