@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIキュレーター | 2026-04-22</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}
+
+/* ─ ヘッダー ─ */
+.site-header {
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.header-eyebrow {
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}
+.header-brand {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}
+.brand-ai {
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}
+.brand-name {
+  color: #fff;
+}
+.header-tagline {
+  font-size: .8em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+/* ─ 統計バー ─ */
+.stats-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: .3em; }
+.stat-star  { color: #f59e0b; font-weight: 700; }
+.stat-star2 { color: #94a3b8; font-weight: 700; }
+.stat-sep   { color: #d1d5db; }
+
+/* ─ コンテンツ ─ */
+.content { max-width: 680px; margin: 0 auto; padding: 1em; }
+
+/* ─ サマリー ─ */
+.summary-box {
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}
+.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
+
+/* ─ セクション見出し ─ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}
+.section-heading .count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+/* ─ ★★★ カード ─ */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
+.card-body { flex: 1; min-width: 0; }
+.card-img-wrap {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}
+.star-badge {
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+.card-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.card-title a { color: #111827; text-decoration: none; }
+.card-title a:hover { color: #4f46e5; text-decoration: underline; }
+.card-source {
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}
+.card-comment {
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ─ ★★ リスト ─ */
+.s2-list { list-style: none; }
+.s2-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.s2-title {
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.s2-title:hover { color: #4f46e5; text-decoration: underline; }
+.s2-meta {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}
+.s2-source { font-size: .75em; color: #9ca3af; }
+
+/* ─ ★ その他 ─ */
+.s1-list { list-style: none; }
+.s1-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}
+.s1-item a { color: #374151; text-decoration: none; flex: 1; }
+.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
+.s1-meta {
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.s1-source { font-size: .7em; color: #9ca3af; }
+
+a { color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 2026-04-22</div>
+  </div>
+</header>
+
+<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 10件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 8件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
+
+<div class="content">
+  <div class="summary-box"><div class="summary-icon">📋</div><div>今日のトレンドは、AI開発に関するニュースが圧倒的に多く、それに伴う技術革新や企業の取り組みが注目されています。特に、富士通の日本独自のビジネス文書を活かしたAI開発に関する記事は印象的で、国内企業のAIへの関与が進んでいることを示しています。今日のニュースを通じて、AI技術の進展がビジネスや日常生活にどのような影響を与えるのかを理解する良い機会です。興味を持って読んでみると、新たな視点が得られるでしょう。</div></div>
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">10</span></div>
+  <div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://www.openalmanac.org/">Show HN: Almanac MCP, turn Claude Code into a Deep Research agent</a></div><div class="card-source">HN</div><div class="card-comment">AI技術の進化に伴い、特にClaude Codeを利用した新たな深層研究エージェントの開発が進んでいます。<br>Almanac MCPは、コードを深く理解し、学習する能力を持つ新しいツールとして注目されています。<br>この技術がどのように研究の効率を向上させるかを知ることができるため、AI開発に興味がある方には必見です。</div></div><a href="https://www.openalmanac.org/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://openalmanac.org/logo.jpg" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zindex.ai/">Zindex – Diagram Infrastructure for Agents</a></div><div class="card-source">HN</div><div class="card-comment">エージェント技術の発展により、インフラの重要性が増しています。<br>Zindexは、エージェント間のコミュニケーションを円滑にするためのダイアグラムインフラを提供しており、その設計が注目されています。<br>この情報は、効率的なエージェントシステムを構築したい開発者にとって非常に有益です。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://openai.com/index/introducing-chatgpt-images-2-0/">ChatGPT Images 2.0</a></div><div class="card-source">HN</div><div class="card-comment">AIが生成する画像技術は日々進化しており、ChatGPT Images 2.0はその最新の成果を示しています。<br>このバージョンでは、より高品質な画像生成が可能になるとされており、その具体的な機能が注目されています。<br>AIによるビジュアルコンテンツ制作に興味がある方は、特に読む価値があります。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://www.ycombinator.com/companies/trellis-ai/jobs/SvzJaTH-member-of-technical-staff-product-engineering-full-time">Trellis AI (YC W24) Is hiring engineers to build self-improving agents</a></div><div class="card-source">HN</div><div class="card-comment">自動改善エージェントの開発は、AIの進化において重要なテーマです。<br>Trellis AIは、自己改善機能を持つエージェントを構築するためにエンジニアを募集しており、その意義が注目されています。<br>未来のAI開発に携わりたい方には、興味深い情報が得られるでしょう。</div></div><a href="https://www.ycombinator.com/companies/trellis-ai/jobs/SvzJaTH-member-of-technical-staff-product-engineering-full-time" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://bookface-images.s3.amazonaws.com/logos/d681b1370ee5c0b4d24b781aa8bc8a11b2c1d375.png?1746931057" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://www.brex.com/crabtrap">CrabTrap: An LLM-as-a-judge HTTP proxy to secure agents in production</a></div><div class="card-source">HN</div><div class="card-comment">AIエージェントの運用においてセキュリティは重要な課題です。<br>CrabTrapは、LLMを裁判官として利用するHTTPプロキシを提供し、エージェントの安全性を高めることを目指しています。<br>このアプローチは、実際のプロダクション環境でのエージェント運用に関心がある方にとって非常に参考になるでしょう。</div></div><a href="https://www.brex.com/crabtrap" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://www.brex.com/api/proxy-image?url=https%3A%2F%2Fbrand.brex.com%2Ftransform%2Fd355afa8-98bc-4424-be0c-236bb6bf77ed%2FCrabTrap-landing-page-preview%3Fio%3Dtransform%3Afit%2Cwidth%3A1200" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://github.com/ENTERPILOT/GOModel/">Show HN: GoModel – an open-source AI gateway in Go</a></div><div class="card-source">HN</div><div class="card-comment">オープンソースのAIゲートウェイは、開発者にとって新たな選択肢を提供します。<br>GoModelは、そのシンプルさと効率性から注目されており、特にGo言語での実装が魅力です。<br>このプロジェクトの詳細を知ることで、オープンソースAIの可能性を広げるヒントが得られます。</div></div><a href="https://github.com/ENTERPILOT/GOModel/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://opengraph.githubassets.com/8e4235644692b9a1adb92eafe007131e635a9a332964cdadf691069d3480d6db/ENTERPILOT/GoModel" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/lv/articles/302bf552110e67">Claude Codeユーザーのためのプロンプトキャッシュ入門</a></div><div class="card-source">Zenn</div><div class="card-comment">Claude Codeユーザーにとって、プロンプトのキャッシュは効率を大幅に向上させるポイントです。<br>この入門記事では、プロンプトキャッシュの基本概念と活用法が紹介されており、実践的な知識が得られます。<br>AIを使った開発を行う人にとって、有益な情報が満載です。</div></div><a href="https://zenn.dev/lv/articles/302bf552110e67" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--VsvtJSGe--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Claude%2520Code%25E3%2583%25A6%25E3%2583%25BC%25E3%2582%25B6%25E3%2583%25BC%25E3%2581%25AE%25E3%2581%259F%25E3%2582%2581%25E3%2581%25AE%25E3%2583%2597%25E3%2583%25AD%25E3%2583%25B3%25E3%2583%2597%25E3%2583%2588%25E3%2582%25AD%25E3%2583%25A3%25E3%2583%2583%25E3%2582%25B7%25E3%2583%25A5%25E5%2585%25A5%25E9%2596%2580%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:oga_aiichiro%25EF%25BC%2588%25E5%25A4%25A7%25E8%25B3%2580%25E6%2584%259B%25E4%25B8%2580%25E9%2583%258E%25EF%25BC%2589%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzNhMDEwODY1NzkuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/mizchi/articles/empirical-prompt-tuning">プロンプトの再現性をAI に自動チューニングさせる方法 ~ 暗黙知を排除する</a></div><div class="card-source">Zenn</div><div class="card-comment">プロンプトの再現性を高めることは、AI開発における重要な課題です。<br>この方法論では、AIに自動でチューニングを行わせる手法が提案されており、特に暗黙知の排除が注目されています。<br>AI技術をさらに深く理解したい方には、読む価値のある内容です。</div></div><a href="https://zenn.dev/mizchi/articles/empirical-prompt-tuning" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--WUmyz2OT--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E3%2583%2597%25E3%2583%25AD%25E3%2583%25B3%25E3%2583%2597%25E3%2583%2588%25E3%2581%25AE%25E5%2586%258D%25E7%258F%25BE%25E6%2580%25A7%25E3%2582%2592AI%2520%25E3%2581%25AB%25E8%2587%25AA%25E5%258B%2595%25E3%2583%2581%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%258B%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%2595%25E3%2581%259B%25E3%2582%258B%25E6%2596%25B9%25E6%25B3%2595%2520%7E%2520%25E6%259A%2597%25E9%25BB%2599%25E7%259F%25A5%25E3%2582%2592%25E6%258E%2592%25E9%2599%25A4%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:mizchi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2liclRHT052Z3d3ay1fNGxlcVk4TGNGSlNuX0FoWnpEWVlKaXJNcWc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE03VVQwZ1B2TVoyXzE1UXg0VENsZldPSlFBMVgyVmRFNGRjdDg3bU9veW5FS0hlUFU5TDFLYVdheDltbmdBOGNyeVBxTzZGakg5MjFjc1hfZktKTWgtMUxuOG5VbVBRakczS2lGLXBaOXR4dUhNUTh1X29CVkRpcVU?oc=5">富士通が自社AIに取り組む理由。「ネットにはない日本のビジネス文書」を活かす発想【日本企業のLLM】 - Yahoo!ニュース</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">日本企業が独自のAI開発に取り組む背景には、文化的な特性を活かす狙いがあります。<br>富士通は、「ネットにはない日本のビジネス文書」を利用することで、より実用的なAIを目指しています。<br>この視点は、グローバルなAI開発動向を理解する上で興味深いものです。</div></div><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE03VVQwZ1B2TVoyXzE1UXg0VENsZldPSlFBMVgyVmRFNGRjdDg3bU9veW5FS0hlUFU5TDFLYVdheDltbmdBOGNyeVBxTzZGakg5MjFjc1hfZktKTWgtMUxuOG5VbVBRakczS2lGLXBaOXR4dUhNUTh1X29CVkRpcVU?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE1oMzVZRmE2SHgxTFBNaFE0TUZZdE9ndjh3TUlYQ2N1ZGpMTG5mRDlrallXN2otVDYxMUZCUXZiUkkyZHRCZDk5MGZsV0ZmRkxYclVaTWc5UlpwVnM?oc=5">CognizantとOpenAIがCodexによるエンタープライズ・ソフトウエア・エンジニアリングの変革に向けて提携 - 共同通信PRワイヤー</a></div><div class="card-source">GoogleNews(IT)</div><div class="card-comment">エンタープライズ向けのソフトウェアエンジニアリングにおいて、AIの導入は不可避です。<br>CognizantとOpenAIの提携は、Codexを用いた新たなアプローチが期待されており、その影響力が注目されています。<br>この情報は、ビジネスにおけるAI活用を考える上で非常に参考になります。</div></div><a href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE1oMzVZRmE2SHgxTFBNaFE0TUZZdE9ndjh3TUlYQ2N1ZGpMTG5mRDlrallXN2otVDYxMUZCUXZiUkkyZHRCZDk5MGZsV0ZmRkxYclVaTWc5UlpwVnM?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div>
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">8</span></div>
+  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://www.reuters.com/sustainability/boards-policy-regulation/meta-start-capturing-employee-mouse-movements-keystrokes-ai-training-data-2026-04-21/">Meta to start capturing employee mouse movements, keystrokes for AI training</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #dc262640"><a class="s2-title" href="https://www.trendmicro.com/en_us/research/26/d/vercel-breach-oauth-supply-chain.html">The Vercel breach: OAuth attack exposes risk in platform environment variables</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/tan_go238/articles/002437e923913c">AIにコーディングを全任せした結果、ドメイン設計に辿り着いた話</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #dc262640"><a class="s2-title" href="https://zenn.dev/nekoai_lab/articles/6b876ab524de84">Cursorで爆速開発、でもセキュリティは爆速で崩壊していた</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcElhZjVGZ2tTYkhoT002N3hJYXJUakVObS16ZzVHWVFiOFR1SWJPQ0U3THZxQjJadGk3NTRLN0tZaVZXSHNqQ0xOSmVLRlJmT3pmenY3Ri1XMTJoeVNvdVZ6ZXRnb2tyeWloYk4wa1NwaVpRQlo1YzQtYUJPanlPV0tKSWd4VWZU?oc=5">米メタ、ＡＩ学習のため従業員のマウス操作やキー入力のデータ収集へ - Reuters</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE5GanZRYXpMUmJFbFlQOTdVRWJkaW96U2V0QnIybXotQVRXek00NnBBRDN6VlYxQVJiT01yYURLbjlIdng1NndULU9uMjMxME9QVWk3V2s4LU9TbFU?oc=5">Cognizant、Cognizant Skillspring™でAI人材育成を推進：顧客企業の従業員のAI対応力向上を加速する新たな人材変革プラットフォーム - 共同通信PRワイヤー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMipAFBVV95cUxNUFpNRG1XZUlOUGFGQlNRZWdwMkV4WnhIYW13YmdDS19nRDZIOGt0WTUydHdmZllyNzhEbWhPa1k4WnVqWi1XY3dEY19Ja21oa2o3UVZmTjBZZ3c0NmdjNVcwLWZvWlB1YkNVU3UtYmlFamlzTDhZeWZ5NEJ5NTJLYjBwUXZFRE16TjlQNlRTSkNGZzdwd1B3SkdDMlQ3R0t1bzhqUA?oc=5">日本ハム、SAP® Business Technology Platformを活用し、AIによる需要予測・在庫引当業務の高度化を推進 - SAP News Center</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTFBLekJTN0ZTSnl6THRBRXNPdmJEcmU2aFhOUmlwekJBakgxc21aN3BlRVBmcVpjYnl2dEVURVF0aUpjemtmMi1tYTJ6SlVJVU9tbndV?oc=5">防衛テック最前線 スタートアップ台頭からスウォーム攻撃、指揮統制AIまで - ビジネスネットワーク</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div></li></ul>
+
+  <div class="section-heading">★ その他 <span class="count">0</span></div>
+  <ul class="s1-list"></ul>
+</div>
+
+</body>
+</html>
