@@ -3,281 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AIキュレーター | 2026-05-07</title>
+<title>トレンドニュース 2026-05-07</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
-  background: #f0f2f5;
-  color: #1f2937;
-  line-height: 1.65;
-  padding-bottom: 3em;
-}
-
-/* ─ ヘッダー ─ */
-.site-header {
-  background: #0d0b1e;
-  background-image:
-    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
-  padding: 2em 1em 1.75em;
-  position: relative;
-  overflow: hidden;
-}
-.site-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
-  background-size: 22px 22px;
-  pointer-events: none;
-}
-.header-inner {
-  position: relative;
-  z-index: 1;
-  max-width: 680px;
-  margin: 0 auto;
-}
-.header-eyebrow {
-  font-size: .68em;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(167,139,250,.85);
-  margin-bottom: .6em;
-}
-.header-brand {
-  font-size: 2.1em;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1;
-  margin-bottom: .45em;
-}
-.brand-ai {
-  background: linear-gradient(90deg, #a78bfa, #60a5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-right: .04em;
-}
-.brand-name {
-  color: #fff;
-}
-.header-tagline {
-  font-size: .8em;
-  color: rgba(255,255,255,.4);
-  margin-bottom: 1.1em;
-  letter-spacing: .01em;
-}
-.header-date {
-  display: inline-flex;
-  align-items: center;
-  gap: .4em;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.13);
-  color: rgba(255,255,255,.75);
-  font-size: .75em;
-  padding: .35em 1em;
-  border-radius: 99px;
-  letter-spacing: .04em;
-}
-
-/* ─ 統計バー ─ */
-.stats-bar {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  padding: .6em 1em;
-  font-size: .8em;
-  color: #6b7280;
-  display: flex;
-  gap: .5em;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.stat { display: flex; align-items: center; gap: .3em; }
-.stat-star  { color: #f59e0b; font-weight: 700; }
-.stat-star2 { color: #94a3b8; font-weight: 700; }
-.stat-sep   { color: #d1d5db; }
-
-/* ─ コンテンツ ─ */
-.content { max-width: 680px; margin: 0 auto; padding: 1em; }
-
-/* ─ サマリー ─ */
-.summary-box {
-  display: flex;
-  gap: .75em;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 12px;
-  padding: 1em;
-  margin-bottom: 1.5em;
-  font-size: .9em;
-  color: #3730a3;
-  line-height: 1.75;
-}
-.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
-
-/* ─ セクション見出し ─ */
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: .5em;
-  margin: 1.75em 0 .85em;
-  font-size: .95em;
-  font-weight: 700;
-  color: #374151;
-}
-.section-heading .count {
-  background: #e5e7eb;
-  color: #6b7280;
-  font-size: .75em;
-  font-weight: 600;
-  padding: 1px 8px;
-  border-radius: 99px;
-}
-
-/* ─ ★★★ カード ─ */
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1em 1em 1em 1.1em;
-  margin-bottom: .85em;
-  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
-  transition: box-shadow .15s;
-  display: flex;
-  gap: .85em;
-  align-items: flex-start;
-}
-.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
-.card-body { flex: 1; min-width: 0; }
-.card-img-wrap {
-  flex-shrink: 0;
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  align-self: flex-start;
-}
-.card-img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  display: block;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: .5em;
-  margin-bottom: .5em;
-}
-.star-badge {
-  font-size: .7em;
-  color: #f59e0b;
-  font-weight: 700;
-  letter-spacing: -.5px;
-}
-.card-title {
-  font-size: 1em;
-  font-weight: 700;
-  margin-bottom: .35em;
-  line-height: 1.45;
-}
-.card-title a { color: #111827; text-decoration: none; }
-.card-title a:hover { color: #4f46e5; text-decoration: underline; }
-.card-source {
-  font-size: .75em;
-  color: #9ca3af;
-  margin-bottom: .55em;
-}
-.card-comment {
-  font-size: .875em;
-  color: #4b5563;
-  line-height: 1.7;
-  padding-top: .55em;
-  border-top: 1px solid #f3f4f6;
-}
-
-/* ─ ★★ リスト ─ */
-.s2-list { list-style: none; }
-.s2-item {
-  background: #fff;
-  border-radius: 10px;
-  padding: .8em 1em .8em 1.1em;
-  margin-bottom: .5em;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06);
-}
-.s2-title {
-  display: block;
-  font-size: .92em;
-  font-weight: 600;
-  color: #1f2937;
-  text-decoration: none;
-  margin-bottom: .35em;
-  line-height: 1.45;
-}
-.s2-title:hover { color: #4f46e5; text-decoration: underline; }
-.s2-meta {
-  display: flex;
-  align-items: center;
-  gap: .4em;
-  flex-wrap: wrap;
-}
-.s2-source { font-size: .75em; color: #9ca3af; }
-
-/* ─ ★ その他 ─ */
-.s1-list { list-style: none; }
-.s1-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: .75em;
-  padding: .55em 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: .85em;
-}
-.s1-item a { color: #374151; text-decoration: none; flex: 1; }
-.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
-.s1-meta {
-  display: flex;
-  align-items: center;
-  gap: .3em;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-.s1-source { font-size: .7em; color: #9ca3af; }
-
-a { color: #4f46e5; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f4f6;color:#1f2937;padding:1em;line-height:1.6}
+  h1{font-size:1.2em;color:#111827;margin:.5em 0 1em;padding-bottom:.4em;border-bottom:2px solid #4f46e5}
+  h2{font-size:1em;margin:1.5em 0 .75em;color:#374151}
+  a{color:#4f46e5;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .card{background:#fff;border-radius:12px;padding:1em;margin-bottom:.75em;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .card-title{font-size:1em;font-weight:bold;margin-bottom:.4em}
+  .card-meta{font-size:.8em;color:#6b7280;margin-bottom:.5em}
+  .card-comment{font-size:.875em;color:#374151}
+  .s2-list{list-style:none;padding:0}
+  .s2-item{background:#fff;border-radius:8px;padding:.75em 1em;margin-bottom:.5em;font-size:.9em;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .s2-meta{font-size:.75em;color:#9ca3af}
+  .s1-list{list-style:none;padding:0}
+  .s1-list li{padding:.4em 0;font-size:.85em;border-bottom:1px solid #e5e7eb;color:#6b7280}
+  .summary-box{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:0 8px 8px 0;padding:.75em 1em;margin-bottom:1.25em;font-size:.9em;color:#3730a3;line-height:1.7}
 </style>
 </head>
 <body>
-
-<header class="site-header">
-  <div class="header-inner">
-    <div class="header-eyebrow">✦ Daily Tech Digest</div>
-    <div class="header-brand">
-      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
-    </div>
-    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
-    <div class="header-date">📅 2026-05-07</div>
-  </div>
-</header>
-
-<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 5件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 5件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
-
-<div class="content">
-  <div class="summary-box"><div class="summary-icon">📋</div><div>今日のトレンドは、AI開発関連のニュースが特に目立ち、関連する記事が多数を占めています。特に印象的だったのは、Claude Codeの可能性を探る内容で、AIエージェントがどのように進化し、実用化されるかに焦点が当てられていました。サイバーセキュリティの問題も取り上げられており、データ保護の重要性が再確認されています。今日のニュースを通じて、AI技術の進化とその影響に注目することが重要です。</div></div>
-
-  <div class="section-heading">★★★ 注目記事 <span class="count">5</span></div>
-  <div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://therecord.media/ADT-data-breach-cyberattack">ADT says customer data stolen in cyber intrusion</a></div><div class="card-source">HN</div><div class="card-comment">サイバーセキュリティはますます重要な問題となっており、企業のデータ漏洩が続いています。<br>ADTが顧客データを盗まれたというニュースは、企業が直面するリスクを再確認させます。<br>この事件を通じて、セキュリティ対策の重要性とその実施方法について考える価値があります。</div></div><a href="https://therecord.media/ADT-data-breach-cyberattack" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://cms.therecord.media/uploads/ADT_8a8e4e5f1b.jpg" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://blog.val.town/better-auth">From Supabase to Clerk to Better Auth</a></div><div class="card-source">HN</div><div class="card-comment">近年、さまざまな開発プラットフォームが登場し、開発者の選択肢が広がっています。<br>SupabaseやClerk、Better Authといったツールの進化は、効率的なアプリケーション開発を可能にします。<br>これらの新しい技術について知識を深めることで、開発の最前線に立つことができるでしょう。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/masayan1126/books/claude-code-subagents-master">Claude Codeサブエージェント完全マスター、設計4原則から公式プラグイン解読までぜんぶ教えたるで</a></div><div class="card-source">Zenn</div><div class="card-comment">AIの進化により、プログラミングの手法も大きく変わりつつあります。<br>Claude Codeのサブエージェントを取り上げ、その設計原則やプラグイン解読の方法を解説する記事は、AI技術の実践的な利用法を示しています。<br>AIの進化を理解し、活用するための貴重な情報が得られるでしょう。</div></div><a href="https://zenn.dev/masayan1126/books/claude-code-subagents-master" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--rJTq148c--/g_center%2Ch_280%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYm9va19jb3Zlci9kYmUzNTdjN2U4LmpwZw==%2Cw_200/v1627283836/default/og-base-book_yz4z02.jpg?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/okazu_dm/articles/83957f1623ec4d">「Claude Codeに全部やらせる時代が来た」のか検証してみた</a></div><div class="card-source">Zenn</div><div class="card-comment">AI技術が進化する中で、Claude Codeに全てを任せることが可能になったのかを検証する記事です。<br>AIの能力をどのように活用できるかを探ることは、今後の開発において非常に重要です。<br>この検証を通じて、AIの可能性と限界について考える良い機会になります。</div></div><a href="https://zenn.dev/okazu_dm/articles/83957f1623ec4d" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--1oDqdcwm--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E3%2580%258CClaude%2520Code%25E3%2581%25AB%25E5%2585%25A8%25E9%2583%25A8%25E3%2582%2584%25E3%2582%2589%25E3%2581%259B%25E3%2582%258B%25E6%2599%2582%25E4%25BB%25A3%25E3%2581%258C%25E6%259D%25A5%25E3%2581%259F%25E3%2580%258D%25E3%2581%25AE%25E3%2581%258B%25E6%25A4%259C%25E8%25A8%25BC%25E3%2581%2597%25E3%2581%25A6%25E3%2581%25BF%25E3%2581%259F%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:okazu%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzJhNGI5MTMzNTcuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/microsoft/articles/b081f3ddb93040">AIエージェントの Skill は書くだけでは足りない ⇒ Waza で評価して APM で配ろう!【ハーネスエンジニアリング】</a></div><div class="card-source">Zenn</div><div class="card-comment">AIエージェントのスキルを活かすためには、単に書くだけでは不十分であるという視点が示されています。<br>Wazaでの評価やAPMによる配布の重要性は、AIの実用性を高めるための新たなアプローチを提供します。<br>この考え方を理解することで、AIの効果的な活用方法について深く学ぶことができます。</div></div><a href="https://zenn.dev/microsoft/articles/b081f3ddb93040" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--VPKhlSw4--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:AI%25E3%2582%25A8%25E3%2583%25BC%25E3%2582%25B8%25E3%2582%25A7%25E3%2583%25B3%25E3%2583%2588%25E3%2581%25AE%2520Skill%2520%25E3%2581%25AF%25E6%259B%25B8%25E3%2581%258F%25E3%2581%25A0%25E3%2581%2591%25E3%2581%25A7%25E3%2581%25AF%25E8%25B6%25B3%25E3%2582%258A%25E3%2581%25AA%25E3%2581%2584%2520%25E2%2587%2592%2520Waza%2520%25E3%2581%25A7%25E8%25A9%2595%25E4%25BE%25A1%25E3%2581%2597%25E3%2581%25A6%2520APM%2520%25E3%2581%25A7%25E9%2585%258D%25E3%2582%258D%25E3%2581%2586%2521%25E3%2580%2590%25E3%2583%258F%25E3%2583%25BC%25E3%2583%258D%25E3%2582%25B9%25E3%2582%25A8%25E3%2583%25B3...%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Naoki%2520Matsumoto%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2MzZDNiN2I3OGYuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:Microsoft%2520%2528%25E6%259C%2589%25E5%25BF%2597%2529%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2YxMjVkOWVmNWEuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div>
-
-  <div class="section-heading">★★ 気になる記事 <span class="count">5</span></div>
-  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://cloud.google.com/blog/products/identity-security/introducing-google-cloud-fraud-defense-the-next-evolution-of-recaptcha/">Google Cloud fraud defense, the next evolution of reCAPTCHA</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE56djhIUU9QX1VPMFc1YmY4WVI0TEVzRDR3eVp2UEhWanNzemNod21ZeGJUTGdKcFRscWIwV1ZaWXNYQ1dUOGNwdGNNbTIwelhDXzE0YTBOeWJScFU5TXczNkVMRQ?oc=5">LTMとユニフォアが提携し、基幹業務プロセス全体にわたるドメイン特化型AIを拡大 - 時事ドットコム</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTFBNOVNEbExITVpCVUFQLTZRcm1QelZOdEZpYmxsQWFsU0YzOGhzSE9mMXFVYWkxUEEyV3dOSnQxVTZ3dHBXZzF3VFQ5UHltN2lUWWtn?oc=5">IBMが「Think 2026」で示した「AIファースト企業」への転換--広がるAI格差とは - ZDNET Japan</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE83V1hiNlVlVkZTYzZfYzlXUjBXcFlVY1JYMmVhYmdZSEZUOXc1c1J5ZnVJcVNfNW5rcHMtNDUyb1NtRVVMblRvV1NTYS1uOG5XMHZZVjZ4LXlEdV91V25WQ2N4cWVHRVpobF8zMFl0dldYUDhRWTRQM2pKekdEckU?oc=5">「AI漬け」のエンジニアは早く燃え尽きる…効率的になったが疲労は増大している（海外）（BUSINESS INSIDER JAPAN） - Yahoo!ニュース</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMijAFBVV95cUxOUWRnZ2xoVnZydEg1UXF5Vzg4eFNBU3Y5V2MxT2VvN1hnV3RUYjU5ckdjRzV2RVpuU1RILVBaQWN5RS1hWmdnc20yR0EyUGNPXzVuczJlby1RZ2NfSll2Mm5sYndjRFlpNUxvZVo4M0RSMVZEVUdLakVQVXAzMGo0RmlQTmU0Wk0zUnA2aQ?oc=5">OpenAIのプライベートエクイティ責任者がGoogleに移籍。これはAI企業が狙う「新たな安定ビジネス」を示している - Business Insider Japan</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div></li></ul>
-
-  <div class="section-heading">★ その他 <span class="count">0</span></div>
-  <ul class="s1-list"></ul>
-</div>
-
-</body>
-</html>
+<h1>📰 トレンドニュース 2026-05-07</h1>
+<div class="summary-box">本日はAI開発・セキュリティ関連が全体の約7割を占め、特にAnthropicがARRでOpenAIを初めて上回ったという歴史的ニュースが複数ソースで話題を席巻した。セキュリティ面ではPalo Alto・Linux・cPanelと主要インフラへのゼロデイ攻撃が重なり、さらにAIを悪用したサイバー攻撃の急増（フィッシング+32%、AI駆動侵害+340%）も確認されており、今すぐ対応が必要な脆弱性が複数存在する。自動運転ではテスラがHW3での完全自動運転不可能を公式認定という衝撃的な事実が明らかになり、中古テスラ市場にも波及必至。5月中旬には東京ビッグサイトでDX推進展・GATEWAY Tech TAKANAWAも開催予定で、エンジニアとして見逃せない1週間となった。</div>
+<h2>★★★ 注目記事</h2>
+<div class="card"><div class="card-title"><a href="https://www.the-ai-corner.com/p/anthropic-30b-arr-passed-openai-revenue-2026">AnthropicがARRでOpenAIを初めて上回る — $30B vs $24B</a></div><div class="card-meta">WebSearch (複数媒体) &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">2025年1月$1B→2026年4月$30Bと15ヶ月で30倍成長。売上の80%がエンタープライズ向けエージェントワークフローで、消費者チャット中心のOpenAIとビジネスモデルが根本的に異なる点が注目。OpenAI側は「$8B過剰計上」と異議あり。</div></div><div class="card"><div class="card-title"><a href="https://www.infoq.com/news/2026/05/anthropic-claude-code-auto-mode/">Claude Code Auto Mode発表 — 人間承認ゲート付き自律コーディングシステム</a></div><div class="card-meta">InfoQ &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></div><div class="card-comment">自律的にコードを実行しながら要所で人間の承認を求める新アーキテクチャ。Pro/Maxの5時間レート制限を2倍に拡大、ピーク時間制限も撤廃。エージェントコーディングが実用フェーズに突入したことを示す象徴的リリース。</div></div><div class="card"><div class="card-title"><a href="https://thehackernews.com/2026/05/2026-year-of-ai-assisted-attacks.html">2026年はAI支援サイバー攻撃の年 — Claude Code/ChatGPTでメキシコ政府1.95億件流出</a></div><div class="card-meta">HackerNews / ISACA<span style="background:#f59e0b;color:#fff;padding:1px 7px;border-radius:99px;font-size:.7em;margin-left:4px">2ソース🔥</span> &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div><div class="card-comment">個人がAIツールで政府10機関をハックし1.95億件の納税者データを奪取。アルジェリアのアマチュアが初月85件のランサム攻撃。Q1フィッシング+32%、AI駆動侵害+340%。攻撃のスキルバリアが崩壊した転換点。</div></div><div class="card"><div class="card-title"><a href="https://www.securityweek.com/palo-alto-networks-to-patch-zero-day-exploited-to-hack-firewalls/">Palo Alto Networksファイアウォール RCEゼロデイ CVE-2026-0300 — 積極的悪用中</a></div><div class="card-meta">SecurityWeek / BleepingComputer<span style="background:#f59e0b;color:#fff;padding:1px 7px;border-radius:99px;font-size:.7em;margin-left:4px">2ソース🔥</span> &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div><div class="card-comment">PAN-OSのバッファオーバーフローで未認証リモートからroot実行可能。PA-SeriesおよびVM-Seriesが対象。パッチは5/13予定、それまでの暫定対策（認証ポータル無効化）を即時適用すべき。</div></div><div class="card"><div class="card-title"><a href="https://cybersecuritynews.com/linux-kernel-0-day-vulnerability-exploited/">Linux "Copy Fail" ゼロデイ CVE-2026-31431 — CISA KEVに追加、5/15修正期限</a></div><div class="card-meta">CybersecurityNews / BleepingComputer<span style="background:#f59e0b;color:#fff;padding:1px 7px;border-radius:99px;font-size:.7em;margin-left:4px">2ソース🔥</span> &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></div><div class="card-comment">732バイトのPythonスクリプトで非特権ユーザーがroot昇格可能（CVSS 7.8）。連邦機関に5/15までの修正義務。クラウドサーバー・コンテナ環境での影響範囲が広く要注意。</div></div><div class="card"><div class="card-title"><a href="https://jidounten-lab.com/u_61574">テスラHW3で完全自動運転不可能をマスク公式認定 — 中古価値暴落へ</a></div><div class="card-meta">自動運転ラボ &nbsp;<span style="background:#0284c7;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">自動運転</span></div><div class="card-comment">長年「HW3でFSD対応可能」と主張してきたマスクが一転。「監視なしFSDへの移行が実現できない」と公式認定。HW3搭載の旧式テスラオーナーには衝撃的で、中古車市場の資産価値への影響は必至。</div></div>
+<h2>★★ 気になる記事</h2>
+<ul class="s2-list"><li class="s2-item"><a href="https://www.theregister.com/software/2026/05/05/anthropic-unleashes-finance-agents-for-claude/5225868">AnthropicがFIS提携で金融犯罪AIエージェント — 銀行・仮想通貨コンプライアンスへ拡大</a><br><span class="s2-meta">The Register &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li><li class="s2-item"><a href="https://www.infoq.com/news/2026/05/cloudflare-llm-infrastructure/">Cloudflare、LLM向け高性能インフラ発表 — モデル重みを15-22%圧縮するUnweight技術</a><br><span class="s2-meta">InfoQ &nbsp;<span style="background:#4f46e5;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">AI開発</span></span></li><li class="s2-item"><a href="https://blog.mean.ceo/large-language-model-news-may-2026/">OpenAIがHiro買収（2026年7件目）/ CoheireとAleph Alpha合併 $6.8B評価</a><br><span class="s2-meta">blog.mean.ceo &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業の動向</span></span></li><li class="s2-item"><a href="https://www.helpnetsecurity.com/2026/04/30/cpanel-zero-day-vulnerability-cve-2026-41940-exploited/">cPanel 認証バイパス CVE-2026-41940 — 2月から悪用、複数攻撃者に拡大</a><br><span class="s2-meta">Help Net Security &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></span></li><li class="s2-item"><a href="https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-microsoft-defender-flaw-exploited-in-zero-day-attacks/">Windows BlueHammer ゼロデイ CVE-2026-33825 — CISA KEV追加、5/7期限</a><br><span class="s2-meta">BleepingComputer &nbsp;<span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">セキュリティ</span></span></li><li class="s2-item"><a href="https://jidounten-lab.com/u_tesla_6dallas">テスラ$6.15 vs Waymo$13.93 — ロボタクシー運賃56%差でSNS炎上</a><br><span class="s2-meta">自動運転ラボ &nbsp;<span style="background:#0284c7;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">自動運転</span></span></li><li class="s2-item"><a href="https://techstartups.com/2026/05/05/top-tech-news-today-may-5-2026/">BMW i Ventures、$300M agentic AI・ロボティクスファンド組成</a><br><span class="s2-meta">Tech Startups &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業の動向</span></span></li><li class="s2-item"><a href="https://www.indiehackers.com/post/tech/learning-to-code-and-building-a-28k-mo-portfolio-of-saas-products-OA5p18fXtvHGxP9xTAwG">Micro SaaS市場2030年に$59.6Bへ — AI加速で個人開発者が5-10倍速でリリース</a><br><span class="s2-meta">Indie Hackers &nbsp;<span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">個人開発（収益化）</span></span></li><li class="s2-item"><a href="https://www.qbook.jp/column/1824.html">第6回 デジタル化・DX推進展 5/13-15 東京ビッグサイト（無料入場）</a><br><span class="s2-meta">Qbook &nbsp;<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">日本のITイベント</span></span></li><li class="s2-item"><a href="https://ascii.jp/elem/000/004/363/4363919/">GATEWAY Tech TAKANAWA 2026 5/13-14 — JR東日本主催、スタートアップ無料</a><br><span class="s2-meta">ASCII STARTUP &nbsp;<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">日本のITイベント</span></span></li><li class="s2-item"><a href="https://jobs.qiita.com/engineer-annualsalary/">AIエンジニア年収558万〜1200万円 — リモート求人も583件以上と充実</a><br><span class="s2-meta">Qiita Job Change &nbsp;<span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">キャリア/転職</span></span></li><li class="s2-item"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTFBNOVNEbExITVpCVUFQLTZRcm1QelZOdEZpYmxsQWFsU0YzOGhzSE9mMXFVYWkxUEEyV3dOSnQxVTZ3dHBXZzF3VFQ5UHltN2lUWWtn?oc=5">IBMが「Think 2026」でAIファースト企業への転換を提示 — AI格差が拡大</a><br><span class="s2-meta">Google News (Business) &nbsp;<span style="background:#0891b2;color:#fff;padding:2px 8px;border-radius:99px;font-size:.75em">テクノロジー企業の動向</span></span></li></ul>
+<h2>★ その他</h2>
+<ul class="s1-list"><li>[137 Ventures が$700M調達 <span style="color:#9ca3af;font-size:.85em">— AI・防衛・産業向け](https://techstartups.com/2026/05/05/top-startup-and-tech-funding-news-may-5-2025/) — Tech Startups</span></li><li><a href="https://www.gartner.co.jp/ja/conferences-and-events">ガートナー データ＆アナリティクス サミット 2026/5/19-21 開催</a> <span style="color:#9ca3af;font-size:.85em">— Gartner</span></li><li><a href="https://www.qbook.jp/column/1824.html">ワイヤレスジャパン×WTP 2026 5/27-29 東京ビッグサイト</a> <span style="color:#9ca3af;font-size:.85em">— Qbook</span></li><li>[「AI漬け」エンジニアは早く燃え尽きる <span style="color:#9ca3af;font-size:.85em">— 効率化と疲労増大のジレンマ](https://news.google.com/rss/articles/CBMif0FVX3lxTE83V1hiNlVlVkZTYzZfYzlXUjBXcFlVY1JYMmVhYmdZSEZUOXc1c1J5ZnVJcVNfNW5rcHMtNDUyb1NtRVVMblRvV1NTYS1uOG5XMHZZVjZ4LXlEdV91V25WQ2N4cWVHRVpobF8zMFl0dldYUDhRWTRQM2pKekdEckU?oc=5) — Google News (Business)</span></li></ul>
+</body></html>
