@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIキュレーター | 2026-05-21</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}
+
+/* ─ ヘッダー ─ */
+.site-header {
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.header-eyebrow {
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}
+.header-brand {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}
+.brand-ai {
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}
+.brand-name {
+  color: #fff;
+}
+.header-tagline {
+  font-size: .8em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+/* ─ 統計バー ─ */
+.stats-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: .3em; }
+.stat-star  { color: #f59e0b; font-weight: 700; }
+.stat-star2 { color: #94a3b8; font-weight: 700; }
+.stat-sep   { color: #d1d5db; }
+
+/* ─ コンテンツ ─ */
+.content { max-width: 680px; margin: 0 auto; padding: 1em; }
+
+/* ─ サマリー ─ */
+.summary-box {
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}
+.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
+
+/* ─ セクション見出し ─ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}
+.section-heading .count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+/* ─ ★★★ カード ─ */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
+.card-body { flex: 1; min-width: 0; }
+.card-img-wrap {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}
+.star-badge {
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+.card-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.card-title a { color: #111827; text-decoration: none; }
+.card-title a:hover { color: #4f46e5; text-decoration: underline; }
+.card-source {
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}
+.card-comment {
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ─ ★★ リスト ─ */
+.s2-list { list-style: none; }
+.s2-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.s2-title {
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.s2-title:hover { color: #4f46e5; text-decoration: underline; }
+.s2-meta {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}
+.s2-source { font-size: .75em; color: #9ca3af; }
+
+/* ─ ★ その他 ─ */
+.s1-list { list-style: none; }
+.s1-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}
+.s1-item a { color: #374151; text-decoration: none; flex: 1; }
+.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
+.s1-meta {
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.s1-source { font-size: .7em; color: #9ca3af; }
+
+a { color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 2026-05-21</div>
+  </div>
+</header>
+
+<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 7件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 3件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
+
+<div class="content">
+  <div class="summary-box"><div class="summary-icon">📋</div><div>今日のニュースでは、AI開発に関する記事が特に多く、最新の技術革新や新たなアプリケーションが注目されています。その中でも、ピクシブが実現したLLM利用率80％の成功事例は、企業のテクノロジー・プロセス・ピープルの統合的アプローチの重要性を示しており、印象的なトピックと言えます。サイバーセキュリティの懸念も浮上している中で、AI技術の進展がどのように企業に影響を与えるのか、今後の動向に目が離せません。今日のニュースを通じて、AIの進化とそのリスクを理解することが、今後のビジネス戦略において重要なポイントとなるでしょう。</div></div>
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">7</span></div>
+  <div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://www.bleepingcomputer.com/news/security/github-confirms-breach-of-3-800-repos-via-malicious-vscode-extension/">GitHub confirms breach of 3,800 repos via malicious VSCode extension</a></div><div class="card-source">HN</div><div class="card-comment">GitHubが3,800のリポジトリに対する侵害を確認しました。<br>悪意のあるVSCode拡張機能が原因で、多くの開発者が影響を受ける可能性があります。<br>このニュースは、開発環境のセキュリティ対策の重要性を再認識させるものです。</div></div><a href="https://www.bleepingcomputer.com/news/security/github-confirms-breach-of-3-800-repos-via-malicious-vscode-extension/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://www.bleepstatic.com/content/hl-images/2026/05/20/GitHub.jpg" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://vmax.ai/team/populora-co-evolving-llm-populations-for-reasoning-self-play">PopuLoRA: Co-Evolving LLM Populations for Reasoning Self- Play</a></div><div class="card-source">HN</div><div class="card-comment">PopuLoRAは、自己思考型のLLM（大規模言語モデル）を共同進化させる新しいアプローチです。<br>この研究は、AIの推論能力を向上させるための新たな手法を示唆しています。<br>AI開発の最前線を知る上で、非常に興味深い内容です。</div></div><a href="https://vmax.ai/team/populora-co-evolving-llm-populations-for-reasoning-self-play" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://intdev-global.s3.us-west-2.amazonaws.com/public/internet-dev/e5748d60-a03a-489f-9f56-bc6b1c8166cc.png" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://xcancel.com/nottombrown/status/2057194829986300375">Anthropic is expanding to Colossus2. Will use GB200</a></div><div class="card-source">HN</div><div class="card-comment">AnthropicがColossus2への拡張を発表し、GB200を使用する計画を明らかにしました。<br>この動きは、彼らのAI技術の進化と市場での競争力を強化することを目的としています。<br>最新のAI技術がどのように進化しているかを理解するために、読む価値があります。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/n0bisuke/books/hermes-agent-linebot">🪽Hermes Agent × LINE で体験する「自律型AI」入門 in 会津若松🪽</a></div><div class="card-source">Zenn</div><div class="card-comment">LINEと協力して「自律型AI」を体験できるイベントが会津若松で開催されます。<br>この試みは、一般の人々がAI技術に触れる良い機会を提供します。<br>自律型AIの実際の応用を知るために、参加や情報収集をお勧めします。</div></div><a href="https://zenn.dev/n0bisuke/books/hermes-agent-linebot" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--N8IO-y_C--/g_center%2Ch_280%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYm9va19jb3Zlci9hNDc2ZGFkZDFjLnBuZw==%2Cw_200/v1627283836/default/og-base-book_yz4z02.jpg?_a=BACAGSGT" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5sRUVRdm5icTI1bVNFYmthVWNZUl83dGN0OHNmQ19NVmh0ZXBhSTBOZ2U0b20wXzkzZWh0ZGRKRndndnhPakQyYnM0S0dxQXRhR3c?oc=5">ピクシブがLLM利用率80％を実現した「テクノロジー・プロセス・ピープル」三位一体の変革 - CodeZine</a></div><div class="card-source">GoogleNews(IT)</div><div class="card-comment">ピクシブがLLMの利用率を80％に達成した背景には、テクノロジー・プロセス・ピープルの三位一体の変革があるとされています。<br>この成功事例は、AI導入の効果を具体的に示すものです。<br>企業や開発者にとって、効果的なAI活用法を学ぶための貴重な参考になります。</div></div><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5sRUVRdm5icTI1bVNFYmthVWNZUl83dGN0OHNmQ19NVmh0ZXBhSTBOZ2U0b20wXzkzZWh0ZGRKRndndnhPakQyYnM0S0dxQXRhR3c?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE0xWTBkTUhFSG04MTMzeDYydXAwMkZ1RWVhNENmS29rTUhPY1VxSmIzZkcwVE5BUTgyZ0VOaV94dHZrZ0R2Z1JqaXRsZTR1dG1qc21z?oc=5">Anthropic、中小企業向けAIエージェント「Claude for Small Business」発表 - ビジネス+IT</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">Anthropicが中小企業向けのAIエージェント「Claude for Small Business」を発表しました。<br>この新製品は、中小企業がAIの恩恵を受けるための手助けをすることを目的としています。<br>中小企業のデジタル化を進めるために、非常に重要な情報です。</div></div><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE0xWTBkTUhFSG04MTMzeDYydXAwMkZ1RWVhNENmS29rTUhPY1VxSmIzZkcwVE5BUTgyZ0VOaV94dHZrZ0R2Z1JqaXRsZTR1dG1qc21z?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #6b7280"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#6b7280;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">自動運転</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE9pWkV5MDY2Si1xc3UyVDYzbkQzYXFSR2ZWR1ZSRWRDaTdtQkNma0tzd0hnUFprVWZzWTlTZEJxcXdNMTdMOUZROWhXT1dpakwwTjluQTVYdHl1aTVGaVJr?oc=5">自動運転シミュレータで限界走行を体感、SOLIZE Ureka Technologyと鷺宮製作所が共同開発 - レスポンス（Response.jp）</a></div><div class="card-source">GoogleNews(IT)</div><div class="card-comment">自動運転シミュレータの開発に関するニュースで、SOLIZE Ureka Technologyと鷺宮製作所が共同で取り組んでいます。<br>このシミュレータは、自動運転技術の限界を体感するためのものです。<br>自動運転技術の進化とその実践的な応用に興味がある方には、非常に興味深い内容です。</div></div><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE9pWkV5MDY2Si1xc3UyVDYzbkQzYXFSR2ZWR1ZSRWRDaTdtQkNma0tzd0hnUFprVWZzWTlTZEJxcXdNMTdMOUZROWhXT1dpakwwTjluQTVYdHl1aTVGaVJr?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div>
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">3</span></div>
+  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://techcrunch.com/2026/05/20/intuit-to-lay-off-over-3000-employees-to-refocus-on-ai/">Intuit to lay off over 3k employees to refocus on AI</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMid0FVX3lxTE56ekI0SzZ2N2VyQ3l2MjNqYmxHaXFBeE5GeTFITkU1b3poaTZtVkpFeXpHX0NzTEFEcm5JVmNVVmh5ZDJ0dHd3cFFmVjZaR1VhMXRWQ1VIUndpQU9Ed1RYeU1KUHpnd3lTQmRCVjcxOTB5a29VQVB3?oc=5">HSBCトップ、AIへの適応を従業員に促す－技術革新で銀行業務に変化 - Bloomberg.com</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5EVGJyeGZzZkowRHpqQUhIX1J1d0JjOXdxZW1lZ3ZDZWwxaFNzMEFpN3NXUTZrXzNoNW9uMktFZ0lGRVROME9DMmdacExLMWNEakJGbHpmYnozTGx1VXdXcHVjaUdBYXI3MlhjaDJlaDkzR1ZReFZ0NVhB?oc=5">ビジネスAI時代の「AIガードレール」の作り方。アドビが提唱する「ブランド知能」に納得するワケ【尾原和啓の深堀り】 - Business Insider Japan</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li></ul>
+
+  <div class="section-heading">★ その他 <span class="count">0</span></div>
+  <ul class="s1-list"></ul>
+</div>
+
+</body>
+</html>
