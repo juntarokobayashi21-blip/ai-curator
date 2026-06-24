@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIキュレーター | 2026-06-24</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}
+
+/* ─ ヘッダー ─ */
+.site-header {
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.header-eyebrow {
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}
+.header-brand {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}
+.brand-ai {
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}
+.brand-name {
+  color: #fff;
+}
+.header-tagline {
+  font-size: .8em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+/* ─ 統計バー ─ */
+.stats-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: .3em; }
+.stat-star  { color: #f59e0b; font-weight: 700; }
+.stat-star2 { color: #94a3b8; font-weight: 700; }
+.stat-sep   { color: #d1d5db; }
+
+/* ─ コンテンツ ─ */
+.content { max-width: 680px; margin: 0 auto; padding: 1em; }
+
+/* ─ サマリー ─ */
+.summary-box {
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}
+.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
+
+/* ─ セクション見出し ─ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}
+.section-heading .count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+/* ─ ★★★ カード ─ */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
+.card-body { flex: 1; min-width: 0; }
+.card-img-wrap {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}
+.star-badge {
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+.card-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.card-title a { color: #111827; text-decoration: none; }
+.card-title a:hover { color: #4f46e5; text-decoration: underline; }
+.card-source {
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}
+.card-comment {
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ─ ★★ リスト ─ */
+.s2-list { list-style: none; }
+.s2-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.s2-title {
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.s2-title:hover { color: #4f46e5; text-decoration: underline; }
+.s2-meta {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}
+.s2-source { font-size: .75em; color: #9ca3af; }
+
+/* ─ ★ その他 ─ */
+.s1-list { list-style: none; }
+.s1-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}
+.s1-item a { color: #374151; text-decoration: none; flex: 1; }
+.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
+.s1-meta {
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.s1-source { font-size: .7em; color: #9ca3af; }
+
+a { color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 2026-06-24</div>
+  </div>
+</header>
+
+<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 8件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 20件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
+
+<div class="content">
+  <div class="summary-box"><div class="summary-icon">📋</div><div>今日の注目ニュースでは、AI開発に関する話題が圧倒的に多く、特にナレッジ管理やコーディングのプロセスに関する新しいアプローチが目立ちました。特に印象的なのは、AIエージェントが通信事業者に与える影響についての議論で、技術革新が業界全体を変える可能性を示唆しています。読者の皆さんには、AIがどのように私たちの仕事や生活に変革をもたらすのか、今日のニュースを通じてぜひ考えていただきたいです。</div></div>
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">8</span></div>
+  <div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://github.com/y-times-y/y">Show HN: Y – A malleable coding-agent desktop app built with Electron</a></div><div class="card-source">HN</div><div class="card-comment">最近のAI開発の進展により、コーディングエージェントの需要が高まっています。<br>この「Y」はElectronを利用して開発されており、柔軟な機能を持つデスクトップアプリです。<br>開発者やエンジニアにとって、作業効率を向上させる新しいツールとして読む価値があります。</div></div><a href="https://github.com/y-times-y/y" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://opengraph.githubassets.com/60023dec2c2b511fd4dc8c187ec3499e752e6a6d407b3ecbb5a0ff73eba3eaa3/y-times-y/y" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://words.filippo.io/vuln-reports/">Vulnerability reports are not special anymore</a></div><div class="card-source">HN</div><div class="card-comment">サイバーセキュリティの脅威が増加する中、脆弱性レポートはもはや特別なものではなくなってきました。<br>このトピックでは、脆弱性の報告がどのように日常的な業務になっているかを考察しています。<br>情報セキュリティに関心がある方には、現状を理解するための重要な記事です。</div></div><a href="https://words.filippo.io/vuln-reports/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://assets.buttondown.email/images/1ec4ddf5-598f-4d72-8d55-10dc1328aa76.jpeg?w=960&amp;fit=max" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/knowledgesense/articles/14a874a9f423bb">AI時代のナレッジ管理手法 - Googleの「OKF」を解説</a></div><div class="card-source">Zenn</div><div class="card-comment">AIが進化する中で、ナレッジ管理の方法も変わる必要があります。<br>Googleの「OKF」はその一例であり、効率的な情報管理を実現する手法を提案しています。<br>AI時代における知識の整理方法を学ぶための価値ある一読です。</div></div><a href="https://zenn.dev/knowledgesense/articles/14a874a9f423bb" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--FqU8NmWM--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:AI%25E6%2599%2582%25E4%25BB%25A3%25E3%2581%25AE%25E3%2583%258A%25E3%2583%25AC%25E3%2583%2583%25E3%2582%25B8%25E7%25AE%25A1%25E7%2590%2586%25E6%2589%258B%25E6%25B3%2595%2520-%2520Google%25E3%2581%25AE%25E3%2580%258COKF%25E3%2580%258D%25E3%2582%2592%25E8%25A7%25A3%25E8%25AA%25AC%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Atsushi%2520Kadowaki%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly96ZW5uLmRldi9pbWFnZXMvZGVmYXVsdC1wdWJsaWNhdGlvbi1hdmF0YXIucG5n%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:%25E3%2583%258A%25E3%2583%25AC%25E3%2583%2583%25E3%2582%25B8%25E3%2582%25BB%25E3%2583%25B3%25E3%2582%25B9%2520-%2520%25E7%2594%259F%25E6%2588%2590AI%25E3%2581%25A8RAG%25E3%2581%25AE%25E5%25AE%259F%25E8%25A3%2585...%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzRlMjk5Y2IwN2IuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/tagucci/articles/fb1ca46cc7cdf3">読みベースの編集距離を測るライブラリ「mòine」をつくりました</a></div><div class="card-source">Zenn</div><div class="card-comment">新たに開発された「mòine」は、編集距離を測るためのライブラリで、AIやテキスト処理において重要な役割を果たします。<br>このライブラリの特性や使い方について詳しく解説されています。<br>プログラマーやデータサイエンティストにとって、実用的なツールを知る良い機会です。</div></div><a href="https://zenn.dev/tagucci/articles/fb1ca46cc7cdf3" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--gCJ-MC4X--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E8%25AA%25AD%25E3%2581%25BF%25E3%2583%2599%25E3%2583%25BC%25E3%2582%25B9%25E3%2581%25AE%25E7%25B7%25A8%25E9%259B%2586%25E8%25B7%259D%25E9%259B%25A2%25E3%2582%2592%25E6%25B8%25AC%25E3%2582%258B%25E3%2583%25A9%25E3%2582%25A4%25E3%2583%2596%25E3%2583%25A9%25E3%2583%25AA%25E3%2580%258Cm%25C3%25B2ine%25E3%2580%258D%25E3%2582%2592%25E3%2581%25A4%25E3%2581%258F%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2597%25E3%2581%259F%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:tagucci%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jTEJWaW9sQmtNZnRteXpzWGFnMGd0R2ZTX014eDZ0YmVwOXJnSmJfTlRTYngxWk9wWHA9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/mkj/articles/56245f7a34539c">AIコーディングではコードではなく検証プロセスをレビューする</a></div><div class="card-source">Zenn</div><div class="card-comment">AIコーディングの進化に伴い、従来のコードレビューだけでなく、検証プロセスの重要性が高まっています。<br>この視点から、AIによるコードの品質向上の方法について考察しています。<br>開発現場での改善点を見つけるために興味深い内容です。</div></div><a href="https://zenn.dev/mkj/articles/56245f7a34539c" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--rCL771Tk--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:AI%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2587%25E3%2582%25A3%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25A7%25E3%2581%25AF%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589%25E3%2581%25A7%25E3%2581%25AF%25E3%2581%25AA%25E3%2581%258F%25E6%25A4%259C%25E8%25A8%25BC%25E3%2583%2597%25E3%2583%25AD%25E3%2582%25BB%25E3%2582%25B9%25E3%2582%2592%25E3%2583%25AC%25E3%2583%2593%25E3%2583%25A5%25E3%2583%25BC%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:fuhitonakagawa%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2U2NGM3ZTBkMzIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/g_south_west%2Ch_34%2Cl_default:og-publication-pro-mark-xcosax%2Cw_34%2Cx_217%2Cy_158/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:%25E6%259D%25BE%25E5%25B0%25BE%25E7%25A0%2594%25E7%25A9%25B6%25E6%2589%2580%25E3%2583%2586%25E3%2583%2583%25E3%2582%25AF%25E3%2583%2596%25E3%2583%25AD%25E3%2582%25B0%2Cx_255%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jS2c1OUFSVkFQOWhsR285Zkp0dk9aOUtQX2lRVlctSER0RzNkZzVFQzFxLTk0Zk5xdlg9czk2LWM=%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/nexta_/articles/be13a2395a5d2a">Claude Code に「7人の意地悪なQA」を仕込んでテストケースの観点漏れを潰した</a></div><div class="card-source">Zenn</div><div class="card-comment">Claude Codeに「7人の意地悪なQA」を組み込むことで、テストケースの漏れを防ぐ取り組みが行われています。<br>この手法は、AIと人間の協力による品質管理の新たな可能性を示しています。<br>テストプロセスの改善に関心がある方にとって、有益な情報が得られるでしょう。</div></div><a href="https://zenn.dev/nexta_/articles/be13a2395a5d2a" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--Y-WMnLZl--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Claude%2520Code%2520%25E3%2581%25AB%25E3%2580%258C7%25E4%25BA%25BA%25E3%2581%25AE%25E6%2584%258F%25E5%259C%25B0%25E6%2582%25AA%25E3%2581%25AAQA%25E3%2580%258D%25E3%2582%2592%25E4%25BB%2595%25E8%25BE%25BC%25E3%2582%2593%25E3%2581%25A7%25E3%2583%2586%25E3%2582%25B9%25E3%2583%2588%25E3%2582%25B1%25E3%2583%25BC%25E3%2582%25B9%25E3%2581%25AE%25E8%25A6%25B3%25E7%2582%25B9%25E6%25BC%258F%25E3%2582%258C%25E3%2582%2592%25E6%25BD%25B0%25E3%2581%2597%25E3%2581%259F%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Ayaka%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2U0ZGE2N2U3OWYuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/g_south_west%2Ch_34%2Cl_default:og-publication-pro-mark-xcosax%2Cw_34%2Cx_217%2Cy_158/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:Nexta%2520Tech%2520Blog%2Cx_255%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzExNzEwZWE5ZmUuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #0891b2"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE82d0hCMzlwNzdwSlp1aGlVY1dRdDJWRFVvVFhSUE1WMm5TcVVDQlB0WVAySGFjUC15Ukc4RHl2YTViRkpnS1FqMFBSU3UxVGRubDB4YjVsRjJCcmRYUjltNkZqVTlyTVdGUlE?oc=5">上場企業も多数導入の大手企業開拓AI「Sales Retriever」、9,500万円を資金調達 - PR TIMES</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">大手企業がAIを活用した新たなビジネスモデルを導入する中で、「Sales Retriever」が注目を集めています。<br>この企業は9,500万円の資金を調達し、さらなる成長を目指しています。<br>テクノロジー企業の動向に興味がある方には、今後の展開に注目する価値があります。</div></div><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE82d0hCMzlwNzdwSlp1aGlVY1dRdDJWRFVvVFhSUE1WMm5TcVVDQlB0WVAySGFjUC15Ukc4RHl2YTViRkpnS1FqMFBSU3UxVGRubDB4YjVsRjJCcmRYUjltNkZqVTlyTVdGUlE?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE15SVhiTE9Za3VDTXlaN3dvLXVqQkNFYkFfamhVOXR1Zi04OXo2YkV1SzR1NEZDanEwbk40bzhjQ0NiMW1QWEwtM2dLX21RQUt4aFVj?oc=5">AIエージェントが通信事業者を変える ドコモの「5G on AWS」でも活躍 - ビジネスネットワーク</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">ドコモの「5G on AWS」プロジェクトにおいて、AIエージェントが通信事業の革新を促進しています。<br>この取り組みは、通信業界におけるAI技術の実用性を示すものです。<br>最新の技術トレンドを把握するために読む価値のある記事です。</div></div><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE15SVhiTE9Za3VDTXlaN3dvLXVqQkNFYkFfamhVOXR1Zi04OXo2YkV1SzR1NEZDanEwbk40bzhjQ0NiMW1QWEwtM2dLX21RQUt4aFVj?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div>
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">20</span></div>
+  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://www.wired.com/story/meta-pauses-employee-tracking-program-following-internal-security-breach/">Meta Pauses Employee-Tracking Program Following Internal Data Leak</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業の動向</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://twitter.com/JPoehnelt/status/2069482265953087602">Fired by Google for creating the Google workspace CLI</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://swipe.futo.tech/">FUTO Swipe – A new swipe typing model</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://nega.tv/posts/low-tech-ai-of-elden-ring.html">The Low-Tech AI of Elden Ring</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://github.com/baidu/Unlimited-OCR">Unlimited OCR: One-shot long-horizon parsing</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://jobs.ashbyhq.com/charge-robotics">Charge Robotics (YC S21) Is Hiring Software and Hardware Engineers</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/aircloset/articles/a7cf65cc035572">46リポジトリに跨るコードベースを、静的解析で一つのナレッジグラフにした話（前編）</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #16a34a40"><a class="s2-title" href="https://zenn.dev/ppgm/books/aws-blocks-mini-support-desk">アプリエンジニアのためのAWS Blocksハンズオン</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発（収益化）</span></div></li><li class="s2-item" style="border-left:3px solid #16a34a40"><a class="s2-title" href="https://zenn.dev/xin9le/articles/1340941f739745">Raspberry Pi + Cloudflare Tunnel で安価で安全な自宅 Web サーバーを手に入れる</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発（収益化）</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/nttdata_tech/articles/e1e7bc7aeb9b20">Databricksが発表したOLAP×OLTP両刀⚔️の次世代DBアーキテクチャ「LTAP」を深堀る！</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://zenn.dev/babyjob/articles/try-workspacestudio">Google Workspace Studioで業務改善に挑戦した</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/tokium_dev/articles/tmux-multitab-context-management">Claude Codeに全部抱え込ませるのをやめた。tmuxのタブを会話させてコンテキストを分割する</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #dc262640"><a class="s2-title" href="https://zenn.dev/bun913/articles/e51dac1dcb7b8d">Webセキュリティラボで出会ったHTTP リクエストスマグリングという知らなかった概念について</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/unsoluble_sugar/articles/fd73c7b67d80ce">Claude Design ↔ Claude Code を行き来して作った資産ポートフォリオダッシュボード</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #16a34a40"><a class="s2-title" href="https://zenn.dev/kamegoro/articles/ef1ab1c9527f9d">LocalStack が有料になったので MiniStack + Terraform でローカル AWS 環境を作り直した</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発（収益化）</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxOWDA2SllpcjBlRjRIa1BXUUNVU2QzRHhONUF4amp2RlFRamZEVVFURjNQeVlmYVk3bGlfbG1vRTdKVkJoS09mRFRaRjRTeDVoSDdTYW1DUkMyR3FYSUhxVktKbTZLZ2hDZXN5cnotajdNRmJwVk5Md0RVQnVjTDIyak1hdkFzRC1EWDZGbVZ2MllsM0I0dXp4VGZsYS1zVnQybGl4ejI5MWhRbTFrV3VnS1Vn?oc=5">「トランスフォーマーのボトルネックを根本解決」 大胆主張は本物か - MITテクノロジーレビュー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiogFBVV95cUxPRmMxWW9JSnR4SnBCR09tRGY0NHo0VnlneHNOSm5vZnJuZ1N2dWlVdkI0WlpRVW1PeHhwWGJmbkRqWm5OZ1hBYnRiR1NVdGNHeDh0VV9jMkswc3pmazZLcHlleWRJdzZOZnJxSmdFZ2UtSEJkX196LW90OHJwTVZ0a1BqdjFwX25QcThHX3R3aUI0eGotWWl6aTVqcDdsNkpOYmc?oc=5">急増するAIの電力需要、AIの「賢い節電」でしのげるか - MITテクノロジーレビュー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #dc262640"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiakFVX3lxTE1SLVpJbWRMQzQ3NGRTQ0R3aWNrU3oxWndZWWdYcDF1djlPcnF5LUNFMG8zVDdUQ29DME5hT2hsQ29sZDQ1STRDQ1AxVGlyQTQxX0hpNGt3OXJ4WTZjWnJkT2hVemhqcDRrV1E?oc=5">ハンモック、SentinelOneと日本初のTechnology Alliance Partner契約を締結 - PR TIMES</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFBBZnJZc2pvelZWVHlDa2kyX2tpa0lOempsTTV4OHY1dk5rUjhCVUxEVm1iS0VSc25Pblo1SG45SFFRekdTSloybW9FV3V5cEI0SmhGcGZn?oc=5">ヤマハが新規事業開発部を新設、「プロイノベーター」の部門トップが指摘する「大企業が直面する壁」と突破の条件 - JBpress</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE0ya3k0MWk1UFNKZWZnSG9BTERudFF5VUpvdGREVW5OX21EQWhBcUQ3UnJhQVNiWjJrTUxfemRqdlpxaEZhcUVXd3hSdHF4WXo4OUdfSldDRG9idVp1ck5iUnBVdmFlNzlGeUlHRjJLcjRBbVRoclpqQkx3RFV5MUU?oc=5">アメリカがアンソロピックのAIモデルを規制。勝者はミストラルとDeepSeek、では敗者は（海外） - Yahoo!ニュース</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li></ul>
+
+  <div class="section-heading">★ その他 <span class="count">0</span></div>
+  <ul class="s1-list"></ul>
+</div>
+
+</body>
+</html>
