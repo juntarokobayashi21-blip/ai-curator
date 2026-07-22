@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIキュレーター | 2026-07-22</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}
+
+/* ─ ヘッダー ─ */
+.site-header {
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.header-eyebrow {
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}
+.header-brand {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}
+.brand-ai {
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}
+.brand-name {
+  color: #fff;
+}
+.header-tagline {
+  font-size: .8em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+/* ─ 統計バー ─ */
+.stats-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: .3em; }
+.stat-star  { color: #f59e0b; font-weight: 700; }
+.stat-star2 { color: #94a3b8; font-weight: 700; }
+.stat-sep   { color: #d1d5db; }
+
+/* ─ コンテンツ ─ */
+.content { max-width: 680px; margin: 0 auto; padding: 1em; }
+
+/* ─ サマリー ─ */
+.summary-box {
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}
+.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
+
+/* ─ セクション見出し ─ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}
+.section-heading .count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+/* ─ ★★★ カード ─ */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
+.card-body { flex: 1; min-width: 0; }
+.card-img-wrap {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}
+.star-badge {
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+.card-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.card-title a { color: #111827; text-decoration: none; }
+.card-title a:hover { color: #4f46e5; text-decoration: underline; }
+.card-source {
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}
+.card-comment {
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ─ ★★ リスト ─ */
+.s2-list { list-style: none; }
+.s2-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.s2-title {
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.s2-title:hover { color: #4f46e5; text-decoration: underline; }
+.s2-meta {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}
+.s2-source { font-size: .75em; color: #9ca3af; }
+
+/* ─ ★ その他 ─ */
+.s1-list { list-style: none; }
+.s1-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}
+.s1-item a { color: #374151; text-decoration: none; flex: 1; }
+.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
+.s1-meta {
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.s1-source { font-size: .7em; color: #9ca3af; }
+
+a { color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 2026-07-22</div>
+  </div>
+</header>
+
+<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 10件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 4件</span><span class="stat-sep">·</span><span class="stat">その他 0件</span></div>
+
+<div class="content">
+  <div class="summary-box"><div class="summary-icon">📋</div><div>今日の注目ニュースでは、特にAI開発に関する話題が多く取り上げられ、その傾向として企業がAIエージェントを活用した業務の自律化を目指す動きが見受けられます。特に印象的だったのは、SAPジャパンが発表した「Autonomous Enterprise」ビジョンで、AIを駆使した企業変革の進展が期待されます。読者の皆さんには、AI技術の進化がビジネスに与える影響を理解するために、今日の記事をぜひチェックしていただきたいです。特に、AIエージェントの活用がどのように業務を変革するかに注目してみてください。</div></div>
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">10</span></div>
+  <div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://buildkite.engineering/how-a-flaky-test-exposed-a-redis-use-after-free/">A flaky test exposed a Redis client use-after-free</a></div><div class="card-source">HN</div><div class="card-comment">Redisクライアントにおけるuse-after-freeの脆弱性が発見され、サイバーセキュリティの重要性が再認識されています。<br>このテストの不具合は、開発者にとって予期しないリスクをもたらす可能性があるため、注視が必要です。<br>セキュリティの強化を目指す開発者や企業にとって、この記事は非常に有益です。</div></div><a href="https://buildkite.engineering/how-a-flaky-test-exposed-a-redis-use-after-free/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://buildkite.engineering/api/og/how-a-flaky-test-exposed-a-redis-use-after-free.png" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #dc2626"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">サイバーセキュリティ</span></div><div class="card-title"><a href="https://openai.com/index/hugging-face-model-evaluation-security-incident/">OpenAI and Hugging Face address security incident during model evaluation</a></div><div class="card-source">HN</div><div class="card-comment">OpenAIとHugging Faceがモデル評価中に発生したセキュリティインシデントに対処したことが報じられています。<br>特に、AIモデルの安全性が高まる中で、企業の対応力が問われる点が注目されます。<br>AI技術に携わる人々にとって、この事例はリスク管理の重要性を理解する手助けになります。</div></div></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/green_tea/articles/e39e3726a449c9">Claude Codeを2時間おきに回してVS Code拡張mdエディタを育てるLoop Engineering実践</a></div><div class="card-source">Zenn</div><div class="card-comment">Claude Codeを利用したVS Code拡張mdエディタの育成が、Loop Engineering手法の一環として行われています。<br>AIを活用した開発プロセスの新しいアプローチが示されており、技術の進化が感じられます。<br>AI開発に興味のある方にとって、実践的な知見が得られる貴重な記事です。</div></div><a href="https://zenn.dev/green_tea/articles/e39e3726a449c9" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--CyUAcaDv--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Claude%2520Code%25E3%2582%25922%25E6%2599%2582%25E9%2596%2593%25E3%2581%258A%25E3%2581%258D%25E3%2581%25AB%25E5%259B%259E%25E3%2581%2597%25E3%2581%25A6VS%2520Code%25E6%258B%25A1%25E5%25BC%25B5md%25E3%2582%25A8%25E3%2583%2587%25E3%2582%25A3%25E3%2582%25BF%25E3%2582%2592%25E8%2582%25B2%25E3%2581%25A6%25E3%2582%258BLoop%2520Engineering%25E5%25AE%259F%25E8%25B7%25B5%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:redtea%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzIzM2I4MmRkNzEuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/tkada/articles/1ba97707dee14a">Unity CLI でAIエージェントにゲームを作らせてみた</a></div><div class="card-source">Zenn</div><div class="card-comment">Unity CLIを用いてAIエージェントがゲームを制作する試みが報告されています。<br>AIがクリエイティブなプロセスに関与することで、ゲーム開発の未来がどう変わるかが興味深いです。<br>AIとゲーム開発の交差点に興味がある方には、必見の内容です。</div></div><a href="https://zenn.dev/tkada/articles/1ba97707dee14a" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--DGytDKma--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Unity%2520CLI%2520%25E3%2581%25A7AI%25E3%2582%25A8%25E3%2583%25BC%25E3%2582%25B8%25E3%2582%25A7%25E3%2583%25B3%25E3%2583%2588%25E3%2581%25AB%25E3%2582%25B2%25E3%2583%25BC%25E3%2583%25A0%25E3%2582%2592%25E4%25BD%259C%25E3%2582%2589%25E3%2581%259B%25E3%2581%25A6%25E3%2581%25BF%25E3%2581%259F%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Takeshi%2520Kada%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2Q5YjkyZWU4OGUuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/estie/articles/f0f114389662ba">自社のレビュー履歴からAIコードレビュアーをつくる方法</a></div><div class="card-source">Zenn</div><div class="card-comment">自社のレビュー履歴を基にAIコードレビュアーを構築する方法が紹介されています。<br>企業が内部データを活用してAIを育てる新しい取り組みが見え、業務効率化の可能性が広がります。<br>AI導入を検討している企業にとって、実践的な参考になるでしょう。</div></div><a href="https://zenn.dev/estie/articles/f0f114389662ba" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--b6mZr8Pm--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E8%2587%25AA%25E7%25A4%25BE%25E3%2581%25AE%25E3%2583%25AC%25E3%2583%2593%25E3%2583%25A5%25E3%2583%25BC%25E5%25B1%25A5%25E6%25AD%25B4%25E3%2581%258B%25E3%2582%2589AI%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589%25E3%2583%25AC%25E3%2583%2593%25E3%2583%25A5%25E3%2582%25A2%25E3%2583%25BC%25E3%2582%2592%25E3%2581%25A4%25E3%2581%258F%25E3%2582%258B%25E6%2596%25B9%25E6%25B3%2595%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Nari%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzUwYzZlODUxOGQuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/g_south_west%2Ch_34%2Cl_default:og-publication-pro-mark-xcosax%2Cw_34%2Cx_217%2Cy_158/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:estie%2520%25E3%2583%2586%25E3%2583%2583%25E3%2582%25AF%25E3%2583%2596%25E3%2583%25AD%25E3%2582%25B0%2Cx_255%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzBmN2NjMzg5NzMuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/tkou15/articles/bonsai-1bit-llm-guide">1-bit LLM「Bonsai」活用ガイド — 1.15GB で動く 8B モデルをローカルで使い倒す</a></div><div class="card-source">Zenn</div><div class="card-comment">1-bit LLM「Bonsai」の活用ガイドが公開され、ローカルでの運用が可能とされています。<br>小型モデルでありながら高い性能を発揮する点が特に注目されます。<br>AI技術の最前線を知りたい方には、非常に役立つ情報です。</div></div><a href="https://zenn.dev/tkou15/articles/bonsai-1bit-llm-guide" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--LKr5qxNS--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:1-bit%2520LLM%25E3%2580%258CBonsai%25E3%2580%258D%25E6%25B4%25BB%25E7%2594%25A8%25E3%2582%25AC%25E3%2582%25A4%25E3%2583%2589%2520%25E2%2580%2594%25201.15GB%2520%25E3%2581%25A7%25E5%258B%2595%25E3%2581%258F%25208B%2520%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AB%25E3%2582%2592%25E3%2583%25AD%25E3%2583%25BC%25E3%2582%25AB%25E3%2583%25AB%25E3%2581%25A7%25E4%25BD%25BF%25E3%2581%2584%25E5%2580%2592%25E3%2581%2599%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:k1t%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzFlZTgxM2Q0NDYuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/loglass/articles/6aa18c80496ec6">AIに「レビューして」はもう古い？「敵対的検証」のすすめ</a></div><div class="card-source">Zenn</div><div class="card-comment">AIに「レビューして」と依頼する手法が古くなりつつある中、「敵対的検証」の重要性が強調されています。<br>新しいアプローチが開発プロセスにどのように影響を与えるかが興味深いです。<br>AI開発の最前線を理解するために、この記事は貴重なリソースとなります。</div></div><a href="https://zenn.dev/loglass/articles/6aa18c80496ec6" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s---aO5m0K2--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:AI%25E3%2581%25AB%25E3%2580%258C%25E3%2583%25AC%25E3%2583%2593%25E3%2583%25A5%25E3%2583%25BC%25E3%2581%2597%25E3%2581%25A6%25E3%2580%258D%25E3%2581%25AF%25E3%2582%2582%25E3%2581%2586%25E5%258F%25A4%25E3%2581%2584%25EF%25BC%259F%25E3%2580%258C%25E6%2595%25B5%25E5%25AF%25BE%25E7%259A%2584%25E6%25A4%259C%25E8%25A8%25BC%25E3%2580%258D%25E3%2581%25AE%25E3%2581%2599%25E3%2581%2599%25E3%2582%2581%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:little_hands%2528%25E6%259D%25BE%25E5%25B2%25A1%2540Lo...%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzRlNWQ4ZTRjZjguanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:%25E6%25A0%25AA%25E5%25BC%258F%25E4%25BC%259A%25E7%25A4%25BE%25E3%2583%25AD%25E3%2582%25B0%25E3%2583%25A9%25E3%2582%25B9%2520%25E3%2583%2586%25E3%2583%2583%25E3%2582%25AF%25E3%2583%2596%25E3%2583%25AD%25E3%2582%25B0%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzAxNjQwZGFkNjEuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #7c3aed"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxPWi1mSFdSWW5pam5aSzJmUk9mYUtBMzZZbU85UTVJejVwR2tNMHpPNlhycjhFelA0cWg0WWpYTkJUcmh4WE9fb3M5ekJrUHJyblZXRnd0cXM4RlB4NTJhVHloM05BWEJoUEpaZ2s3WHlraWhRMm9SS2NRcVU4cmJISmxydDd6Nm9QbkRzUmpR?oc=5">SAPジャパン、AIエージェント時代に向けた企業変革ビジョン「Autonomous Enterprise（自律型エンタープライズ）」を発表 - SAP News Center</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">SAPジャパンが「自律型エンタープライズ」のビジョンを発表し、AIエージェントの導入が企業変革の鍵となることを示唆しています。<br>AIの進化が業務の効率化にどう寄与するかが注目ポイントです。<br>ビジネスリーダーや戦略担当者にとって、未来の企業運営を考える上で価値ある記事です。</div></div><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxPWi1mSFdSWW5pam5aSzJmUk9mYUtBMzZZbU85UTVJejVwR2tNMHpPNlhycjhFelA0cWg0WWpYTkJUcmh4WE9fb3M5ekJrUHJyblZXRnd0cXM4RlB4NTJhVHloM05BWEJoUEpaZ2s3WHlraWhRMm9SS2NRcVU4cmJISmxydDd6Nm9QbkRzUmpR?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #7c3aed"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9STF9Ld05MMU9xNjRrYTh3SHhLVUhXV2VjbGM3M3c5bWpNR3NqMndWalQzakFDR1dkdWdPTlhpWXg3Z28wemxMdTE2a0JyVEg0WFhBVW9lb1NnOGd5YVZQbVZPdl9rMjNJUC1TaXlteE5nTGZPODgtQWZIY3h1b3M?oc=5">SAPジャパン、AIエージェントが組織横断で業務を自律的に支援・遂行する新たな企業変革ビジョン「Autonomous Enterprise」を発表（クラウド Watch） - Yahoo!ニュース</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">SAPジャパンが発表した「Autonomous Enterprise」ビジョンは、AIエージェントによる業務の自律的支援を目指しています。<br>特に、組織横断での業務遂行が可能になる点が注目されます。<br>企業のデジタルトランスフォーメーションを推進するための重要な視点が得られます。</div></div><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9STF9Ld05MMU9xNjRrYTh3SHhLVUhXV2VjbGM3M3c5bWpNR3NqMndWalQzakFDR1dkdWdPTlhpWXg3Z28wemxMdTE2a0JyVEg0WFhBVW9lb1NnOGd5YVZQbVZPdl9rMjNJUC1TaXlteE5nTGZPODgtQWZIY3h1b3M?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE56NVM1QlFHMmJsSm51UzhtcWFaeUFFQ0YySWhZMl9CQTlkRXdFOFJRQnNjZVZsNGo5ZnZWWmtWTllFa180WjIyejNqWnhrdGtVNUpZ?oc=5">米OpenAIのChat GPT Workの利用者が1000万人に到達、AnthropicのCoworkとの競争激化 - ビジネス+IT</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">OpenAIのChat GPT Workの利用者が1000万人を突破し、AnthropicのCoworkとの競争が激化しています。<br>AIチャットボットの普及が進む中、企業間競争がどのように発展するかが注目されます。<br>AI技術のトレンドを把握するために、興味深い情報が提供されています。</div></div><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE56NVM1QlFHMmJsSm51UzhtcWFaeUFFQ0YySWhZMl9CQTlkRXdFOFJRQnNjZVZsNGo5ZnZWWmtWTllFa180WjIyejNqWnhrdGtVNUpZ?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div>
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">4</span></div>
+  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://ads.openai.com/">Advertise in ChatGPT</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://runtimewire.com/article/jack-dorsey-block-buzz-team-chat-ai-agents-git">Jack Dorsey launches Buzz to combine team chat, AI agents and Git hosting</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #d9770640"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiakFVX3lxTFB5Wl9oVHBoSnVRNkFzT2l0UUhMU055c2hNUy13aEZVNU5wVkpmUEJybEZnSlluSkloTkpPRk8tTnZVMmY0aEFoZzlSeDNydV9vT2VUV2JYSTYxbzlTQWszUG5GbDVnMDZRcFE?oc=5">【未経験からITエンジニアへの転職実態調査】出社・リモートのハイブリッド勤務が5割、残業は5割超が月10時間未満。それでも約77%が「転職してよかった」と回答 - PR TIMES</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">キャリア/転職</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE42S2NsVHFNZkNmSzlCTXRvTncyMDI0N1N3aVhEeVM1N3ZrM015LTg3WTFZNVNBZ1Ftcm1CUzVxeERiSzhldTdVOVhOZTlYcjFGZHVUaTd3?oc=5">27人で売上300億円の「アフターAI企業」も登場、日清食品CIOと入山章栄氏が語る「ビフォーAI企業」の変革と勝ち筋 - JBpress</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li></ul>
+
+  <div class="section-heading">★ その他 <span class="count">0</span></div>
+  <ul class="s1-list"></ul>
+</div>
+
+</body>
+</html>
