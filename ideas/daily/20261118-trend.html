@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIキュレーター | 2026-11-18</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  line-height: 1.65;
+  padding-bottom: 3em;
+}
+
+/* ─ ヘッダー ─ */
+.site-header {
+  background: #0d0b1e;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(99,102,241,.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(139,92,246,.25) 0%, transparent 50%);
+  padding: 2em 1em 1.75em;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.header-eyebrow {
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.85);
+  margin-bottom: .6em;
+}
+.header-brand {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: .45em;
+}
+.brand-ai {
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: .04em;
+}
+.brand-name {
+  color: #fff;
+}
+.header-tagline {
+  font-size: .8em;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 1.1em;
+  letter-spacing: .01em;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.75);
+  font-size: .75em;
+  padding: .35em 1em;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+/* ─ 統計バー ─ */
+.stats-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: .6em 1em;
+  font-size: .8em;
+  color: #6b7280;
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: .3em; }
+.stat-star  { color: #f59e0b; font-weight: 700; }
+.stat-star2 { color: #94a3b8; font-weight: 700; }
+.stat-sep   { color: #d1d5db; }
+
+/* ─ コンテンツ ─ */
+.content { max-width: 680px; margin: 0 auto; padding: 1em; }
+
+/* ─ サマリー ─ */
+.summary-box {
+  display: flex;
+  gap: .75em;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  font-size: .9em;
+  color: #3730a3;
+  line-height: 1.75;
+}
+.summary-icon { font-size: 1.4em; flex-shrink: 0; padding-top: .05em; }
+
+/* ─ セクション見出し ─ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.75em 0 .85em;
+  font-size: .95em;
+  font-weight: 700;
+  color: #374151;
+}
+.section-heading .count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: .75em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+/* ─ ★★★ カード ─ */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1em 1em 1em 1.1em;
+  margin-bottom: .85em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  transition: box-shadow .15s;
+  display: flex;
+  gap: .85em;
+  align-items: flex-start;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12), 0 6px 20px rgba(0,0,0,.06); }
+.card-body { flex: 1; min-width: 0; }
+.card-img-wrap {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .5em;
+}
+.star-badge {
+  font-size: .7em;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+.card-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.card-title a { color: #111827; text-decoration: none; }
+.card-title a:hover { color: #4f46e5; text-decoration: underline; }
+.card-source {
+  font-size: .75em;
+  color: #9ca3af;
+  margin-bottom: .55em;
+}
+.card-comment {
+  font-size: .875em;
+  color: #4b5563;
+  line-height: 1.7;
+  padding-top: .55em;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ─ ★★ リスト ─ */
+.s2-list { list-style: none; }
+.s2-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: .8em 1em .8em 1.1em;
+  margin-bottom: .5em;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.s2-title {
+  display: block;
+  font-size: .92em;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+  margin-bottom: .35em;
+  line-height: 1.45;
+}
+.s2-title:hover { color: #4f46e5; text-decoration: underline; }
+.s2-meta {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex-wrap: wrap;
+}
+.s2-source { font-size: .75em; color: #9ca3af; }
+
+/* ─ ★ その他 ─ */
+.s1-list { list-style: none; }
+.s1-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75em;
+  padding: .55em 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .85em;
+}
+.s1-item a { color: #374151; text-decoration: none; flex: 1; }
+.s1-item a:hover { color: #4f46e5; text-decoration: underline; }
+.s1-meta {
+  display: flex;
+  align-items: center;
+  gap: .3em;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.s1-source { font-size: .7em; color: #9ca3af; }
+
+a { color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">✦ Daily Tech Digest</div>
+    <div class="header-brand">
+      <span class="brand-ai">AI</span><span class="brand-name">キュレーター</span>
+    </div>
+    <div class="header-tagline">テクノロジーのトレンドを毎朝AIが収集・評価</div>
+    <div class="header-date">📅 2026-11-18</div>
+  </div>
+</header>
+
+<div class="stats-bar"><span class="stat"><span class="stat-star">★★★</span> 注目 8件</span><span class="stat-sep">·</span><span class="stat"><span class="stat-star2">★★</span> 気になる 35件</span><span class="stat-sep">·</span><span class="stat">その他 6件</span></div>
+
+<div class="content">
+  <div class="summary-box"><div class="summary-icon">📋</div><div>本日は8件の注目記事を収集しました。AI開発関連が7件と最多で、「Harvard researchers …」、「ローカルLLM入門…」などが話題です。次いでテクノロジー企業（1件）が続きます。気になる記事をチェックしてみてください。</div></div>
+
+  <div class="section-heading">★★★ 注目記事 <span class="count">8</span></div>
+  <div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/">Harvard researchers find AI coding agents shifted the bottleneck to code review</a></div><div class="card-source">HN</div><div class="card-comment">Hacker Newsで話題になっているAI開発領域の記事。<br>海外エンジニアコミュニティでの反応が大きく、グローバルなトレンドを把握するのに役立つ。<br>英語だが概要だけでも確認しておく価値がある。</div></div><a href="https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://complexdiscovery.com/wp-content/uploads/2026/10/AI-Report-One.jpg" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/port_inc/articles/ff974c7456f4db">ローカルLLM入門</a></div><div class="card-source">Zenn</div><div class="card-comment">日本人エンジニアによるAI開発の実践的な解説記事。<br>実際の開発経験をもとに書かれており、コードや具体例が豊富で手を動かしながら学べる内容になっている可能性が高い。</div></div><a href="https://zenn.dev/port_inc/articles/ff974c7456f4db" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s---mGpp2UG--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E3%2583%25AD%25E3%2583%25BC%25E3%2582%25AB%25E3%2583%25ABLLM%25E5%2585%25A5%25E9%2596%2580%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:tesla%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzcyNzc0NTRhOWIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:%25E3%2583%259D%25E3%2583%25BC%25E3%2583%2588%25E6%25A0%25AA%25E5%25BC%258F%25E4%25BC%259A%25E7%25A4%25BE%2520%25E3%2582%25A8%25E3%2583%25B3%25E3%2582%25B8%25E3%2583%258B%25E3%2582%25A2%25E3%2583%2596%25E3%2583%25AD%25E3%2582%25B0%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2Q3MmIzODI1NzEuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/andoshin11/articles/ba68b39ef9a8ce">毎月6,000 AI Agentsを捌くためにキーボードを捨てた話</a></div><div class="card-source">Zenn</div><div class="card-comment">日本人エンジニアによるAI開発の実践的な解説記事。<br>実際の開発経験をもとに書かれており、コードや具体例が豊富で手を動かしながら学べる内容になっている可能性が高い。</div></div><a href="https://zenn.dev/andoshin11/articles/ba68b39ef9a8ce" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s---0_QUo5G--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E6%25AF%258E%25E6%259C%25886%252C000%2520AI%2520Agents%25E3%2582%2592%25E6%258D%258C%25E3%2581%258F%25E3%2581%259F%25E3%2582%2581%25E3%2581%25AB%25E3%2582%25AD%25E3%2583%25BC%25E3%2583%259C%25E3%2583%25BC%25E3%2583%2589%25E3%2582%2592%25E6%258D%25A8%25E3%2581%25A6%25E3%2581%259F%25E8%25A9%25B1%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Andy%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2ZlNWEwYThlMjIuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/gemcook/articles/claude-code-otel-cloudflare">OpenTelemetry×Cloudflareで組織のClaude Code利用ログを収集する</a></div><div class="card-source">Zenn</div><div class="card-comment">日本人エンジニアによるAI開発の実践的な解説記事。<br>実際の開発経験をもとに書かれており、コードや具体例が豊富で手を動かしながら学べる内容になっている可能性が高い。</div></div><a href="https://zenn.dev/gemcook/articles/claude-code-otel-cloudflare" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--HQ9V4y1J--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:OpenTelemetry%25C3%2597Cloudflare%25E3%2581%25A7%25E7%25B5%2584%25E7%25B9%2594%25E3%2581%25AEClaude%2520Code%25E5%2588%25A9%25E7%2594%25A8%25E3%2583%25AD%25E3%2582%25B0%25E3%2582%2592%25E5%258F%258E%25E9%259B%2586%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:soso%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzQyYzJiNzVlZTIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/g_south_west%2Ch_34%2Cl_default:og-publication-pro-mark-xcosax%2Cw_34%2Cx_217%2Cy_158/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:Gemcook%2520Tech%2520Blog%2Cx_255%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzFmODE2ZDZkNWQuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://zenn.dev/linkedge/articles/claude-code-instead-of-reading-code">Claude Codeが書いたコードを読む代わりにやっていること</a></div><div class="card-source">Zenn</div><div class="card-comment">日本人エンジニアによるAI開発の実践的な解説記事。<br>実際の開発経験をもとに書かれており、コードや具体例が豊富で手を動かしながら学べる内容になっている可能性が高い。</div></div><a href="https://zenn.dev/linkedge/articles/claude-code-instead-of-reading-code" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://res.cloudinary.com/zenn/image/upload/s--EYASHMzU--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Claude%2520Code%25E3%2581%258C%25E6%259B%25B8%25E3%2581%2584%25E3%2581%259F%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589%25E3%2582%2592%25E8%25AA%25AD%25E3%2582%2580%25E4%25BB%25A3%25E3%2582%258F%25E3%2582%258A%25E3%2581%25AB%25E3%2582%2584%25E3%2581%25A3%25E3%2581%25A6%25E3%2581%2584%25E3%2582%258B%25E3%2581%2593%25E3%2581%25A8%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Misugi%2520Takeru%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzNmZmE4YTI1NWMuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:%25E6%25A0%25AA%25E5%25BC%258F%25E4%25BC%259A%25E7%25A4%25BEL%2526E%2520Group%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyLzYwOWMxZjVhYzcuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #0891b2"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxQUmlOSllqOEo1UjN0Sl9EWS12cHp5OUhLMDRYcmc1cEU1djFxZGU1TWhodEMyOV9FeWxra1VsTU9vTEU0ZGxFanJZc2RBNmt4VkFTbVFpTS1OT2VWbzlVeUFwREl5emtTbnJCM2xpS3JpVW5vUjBEVUhkTWY1b09ieVV5Mk9DWlJuSDJYbg?oc=5">ElevenLabsが日本のスタートアップ・Kotobaを約159億円で買収へ。日本語の音声AI開発を加速 - Business Insider Japan</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">テクノロジー企業分野の注目記事。<br>実務や最新動向を把握するうえで参考になる内容が含まれている。<br>気になるキーワードがあれば詳しく読んでみよう。</div></div><a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxQUmlOSllqOEo1UjN0Sl9EWS12cHp5OUhLMDRYcmc1cEU1djFxZGU1TWhodEMyOV9FeWxra1VsTU9vTEU0ZGxFanJZc2RBNmt4VkFTbVFpTS1OT2VWbzlVeUFwREl5emtTbnJCM2xpS3JpVW5vUjBEVUhkTWY1b09ieVV5Mk9DWlJuSDJYbg?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMixwFBVV95cUxNcFpxRFVQdGlhbFJLSU1faE1majQweGhxc3VpZEhXejZZNHU5d1M4LW9DSFR4N0o5aWJ5VG9PcVlFU2I1UzFaQV8xcWo1b3JjZ09UcElCRXNUMldBSGlrOWNadms2X1QxR3hfWTlwcG1lcUtWX0tIUXZGTk10NTRkTHRNZzk5MXhpeF96MUFGZmkwc0dJdmJpNFpPdUlsM0RQNzhSUkRFRFg2Rl9qNTZnLTVSR0haVlQtRFdza1M4UW9HeXpuVkdV?oc=5">ChatGPT に無料の企業用エージェントを導入 EC事業者が押さえるべき変化とは - DIGIDAY［日本版］</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">AI開発分野の注目記事。<br>実務や最新動向を把握するうえで参考になる内容が含まれている。<br>気になるキーワードがあれば詳しく読んでみよう。</div></div><a href="https://news.google.com/rss/articles/CBMixwFBVV95cUxNcFpxRFVQdGlhbFJLSU1faE1majQweGhxc3VpZEhXejZZNHU5d1M4LW9DSFR4N0o5aWJ5VG9PcVlFU2I1UzFaQV8xcWo1b3JjZ09UcElCRXNUMldBSGlrOWNadms2X1QxR3hfWTlwcG1lcUtWX0tIUXZGTk10NTRkTHRNZzk5MXhpeF96MUFGZmkwc0dJdmJpNFpPdUlsM0RQNzhSUkRFRFg2Rl9qNTZnLTVSR0haVlQtRFdza1M4UW9HeXpuVkdV?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div><div class="card" style="border-left:4px solid #4f46e5"><div class="card-body"><div class="card-header"><span class="star-badge">★★★</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div><div class="card-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE8xWUVsTTJFYTB5M3hsckc2X1VvYUJjY3RlbjhyWWJzeUE2VXU1cDU0RE10dmgzZzd6Y3Z5d2thNlRqZi1JZGg4ZWNCMzFzZThtRUF1OTdWQW51VC0yWUtnNHlCcVZCcFJSS0RKMzdrellyOGFj?oc=5">わが社はChatGPTでどう紹介されている？ OpenAIが企業向けの確認機能を提供開始 - ITmedia</a></div><div class="card-source">GoogleNews(Business)</div><div class="card-comment">AI開発分野の注目記事。<br>実務や最新動向を把握するうえで参考になる内容が含まれている。<br>気になるキーワードがあれば詳しく読んでみよう。</div></div><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE8xWUVsTTJFYTB5M3hsckc2X1VvYUJjY3RlbjhyWWJzeUE2VXU1cDU0RE10dmgzZzd6Y3Z5d2thNlRqZi1JZGg4ZWNCMzFzZThtRUF1OTdWQW51VC0yWUtnNHlCcVZCcFJSS0RKMzdrellyOGFj?oc=5" class="card-img-wrap" tabindex="-1"><img class="card-img" src="https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300" alt="" loading="lazy" onerror="this.remove()"></a></div>
+
+  <div class="section-heading">★★ 気になる記事 <span class="count">35</span></div>
+  <ul class="s2-list"><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://kernel.dev/blog/why-is-gemini-4-carbon-taking-so-long/">Why is Gemini 4 Carbon taking so long?</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://revscope.co/blog/search-seo-geo-2026/">Google's AI answers reducing search traffic by 40%</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://wiki.archiveteam.org/index.php/Apple_Discussions">Archive Team is archiving the Apple Support Community (closes November 20, 2026)</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://github.com/microsoft/onnxruntime">Microsoft's ONNX Runtime has disappeared from GitHub</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://starsling.dev">Launch HN: StarSling (YC P25) – Self-improving CI for agent-volume repos</a><div class="s2-meta"><span class="s2-source">HN</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/epicai_techblog/articles/29b509117755af">L40S 1台で社内RAGは何人まで使えるか</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/peoplex_blog/articles/vscode-to-claude-desktop">Claude Desktop 開発のすゝめ</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/dress_code/articles/30bd78e1a67f87">mise + gh skill で、dotfiles から Agent Skills を管理する</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/rimo/articles/701d18b7764669">お問い合わせの8割を、AIボットが解決するようになった話</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/xtm_blog/articles/20261116-fd1702b0ba06cd">フロントエンドの logic と UI は、エージェントの責任範囲で分けられるのか</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/gatechnologies/articles/8bdea59269eb10">QA生産性を爆上げさせるためのQA AIプラットフォーム構築</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/turing_motors/articles/cea9e3c85611b2">物理世界とAIをつなぐ：可視化で学ぶカメラ・座標系・運動制御入門</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://zenn.dev/karamage/articles/5c3f8370b2b370">【pstack】AIに敵対的レビューをさせるな。トークンは検証に使え</a><div class="s2-meta"><span class="s2-source">Zenn</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9NYlpGR0Z0d0VRQ09FUGxtMk1mU2pINm9qaEd0Y3ZkMDJ0cEQ5VTdDd1A2Q181dlpUUENvalZtZ2FhSnRyS0ZsUVdDX09CTkNwWVJBMm16ZWlpT1JLSjllYlI5WlNDbVNidXJNTE5BVmtjeWJWWTNONXNJcnRzUGc?oc=5">【ベトナム】建設ＤＸのワンテクノロジー、越同業を買収（NNA） - Yahoo!ニュース</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiY0FVX3lxTFB6NDl2UWc1ZE8zTHVMX05CbFA4VThPMnZYY3ByZVl2QjdBd0x4MGdwVXVORU1JXzA2MlYyckNtM1pqOUJaa2dmMDhoV3JFd1hLWTZHblNscm5kTmsxNVBTc3Azaw?oc=5">One Technology Japan、建設DXの地場企業を子会社化［日系］ - VIETJOベトナムニュース</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxONTM2WXFaUnpQRmtHTmtseUZMdjlrdFlvZU1pNEtNRldybVNTUFJuektjR0hwU183MTVJNDAyMVZKVXc2ejVEWDdZQUNJNnFFVmlRNHFIRHZoWUJFdWx5bGs0ZWJrTXhDcTRFeUhzQTdXd1o1Mzg4anBDLXRQSEZjMDYyb1RCQU9xajYxd1pZTnlUUzcwLUxWX0Ewemh1YjZLWFQyYVc0dndPd2FLbnBvcHdxZ3c1QjJYaHBURVVUWjc?oc=5">AI活用バッテリー技術：機会、新しい用途、先進ソフトウエア - IDTechEx</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiYkFVX3lxTE5sMDA1Vm5wWVF0VldnckhHLTJ2Wlo0cUxlYTJFOTl6ck9PUDdKZVM3c0hyM2dJVUtzeUVaN2h1UERBZUlINTdtYWhhODZHMURFSmF6anFmeTBGMXhENmJsMHVB?oc=5">サーキュラーエコノミーの実現に向け新しいテクノロジーの社会実装を推進 - AIST： 産業技術総合研究所</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #6b728040"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE5XVGw0WDEzMkRtWFFUU3BoREtlcXY3M1FULV9EdUNwNlBPMkl3R0pFTExOcEJQUHpDbWFqTlUxRko5U3F6a0J2R3NBUl9vTmVrVWtUQk96N0xmVzQ?oc=5">AMPERA and Berto Announce Proposed Business Combination to Accelerate Advanced Energy Technology Development and Commercialization - 共同通信PRワイヤー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#6b7280;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">自動運転</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE5ndXpqV3Y4Y2ZmMVZ4TTBjaWRCY3dnRmttbnJxczJGSl9pUHZoSEhHdm1vRkc2WXlzaU44T0JEWGVPeExzZElrRzR3?oc=5">技術と経営を結び付けるには？ 今こそ知りたい「MOT」 MOTを知る特別講座2027 解説セミナー - 日経イベント＆セミナー</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMidEFVX3lxTFBxQ2Y1NkNaXzkzeFplb2N0QVZwci1IMjlDbXBnSWpfQjBfeDY2ajVuUDBzTTdvSmh1bTQ3UzNZaDRmSzhOelg1Qm9YSHlXcFVEQ0hJb0VDdzFJNVFMNTZUdFNyU3NTbFB4Y05TcExXdENDc3pT?oc=5">CredoとMarvell、AIデータセンター向けケーブル特許紛争で和解 - BigGo ファイナンス</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMia0FVX3lxTE9WaExqVEVvemNvaUxnYlExMS00a044eG1XcTlWWDAySHBiRGVRZERZdkxLOTVLbDFNTmJGVjAwWnhBel9KVUFOUzJYODN4QkRIYm9iZ0lLWDBDaXd4OGxRNzFtNjA5cHpyQm1J?oc=5">ハノイ国立建設大学創立６０周年記念式典ならびに科学技術研究集会・展示会に招待され、カンファレンスにて川本研究領域長が基調講演を行いました（研究機構 戦略研究センター 循環型ゼロエミッション社会形成研究領域） - 埼玉大学</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMi8gFBVV95cUxPMUJYaFVJNjRhWnpWeXN4OXpEc01RdWx1Z3E4NTY1UmU3V2VMZVdVT3ZjajlYZFl5dXhDSmFHNXJhRVF1SzBVcG9qMnhpeHNXaElEV1BZeXcxclIydG92aGpiMk5tbjZvT09BT0llYzhuc2xDNlBsWnRrVE1CNk9hVFVoQ3BOV1NyS01uQTZfQlhISTFDWGVQbWdtaENBZk02QjgyM3NuLTZEbzRHWmd4UWFUUzh0bldtX1I5dzNDSVQ2XzcwY3FEdFlJRHhHQmxVVFYzSWdfVnNyazJFQzBxUFMyb2hELXBJMHRXaGJjZW1SZw?oc=5">マルチテクノロジー複合レーザー装置市場、2035年までの成長見通し：微細化がけん引 - ニュースと統計 - IndexBox</a><div class="s2-meta"><span class="s2-source">GoogleNews(IT)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1hQXU5NkZnZ3QyLXBQWDkxY1h0bjFPNFNpS3NtTEVWcnZJZGxLQW5BRlo0UjQ5TVhMTURXQXVIYTZfR05SZUFPLXZaTkU4azdjMVMtZTN3R296MmxjYldiQklNcl90R2s?oc=5">12/4無料開催 グローバル・サプライチェーンフォーラム 2026 Winter - 日経ビジネス電子版</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiakFVX3lxTE1kRTlhcGxrNFJhY2J0TDFMWElaZHk2UUlRTlJYWjEtQzBIS3YtT0RqWlo4QUdRb1VvMUxzTnQ2ZmtKZmpzVDRSY0pqRXRmS1FCNW1rVzVVdGNiR3JJUWFLcF9LTXNWVVAwbHc?oc=5">ぴあスポーツビジネスプログラム 第7期受講生募集のご案内 - PR TIMES</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMickFVX3lxTE1CX210QXFNQ20zQnNDNTViZFk1amlzMDVJdlRybmpOZmRDWHdEeEwtSWZMS3hjR2J0VXpfLTR3OXF5S2EtUENlRnM0STdIN1Q2NEhyVVRjLUVYNWM5dXQxTmlISFFKbnFWcXR2ZWx6cFJpdw?oc=5">104社118名が集結！川崎商工会議所「第2回全会員ビジネス交流会」を開催 - Infoseek</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFA5dDB6YXhYdFl4Q3g3NUtYUXcyUDNDaHJwNUdRbmFCdE9HZnFqdXJZbHMwVDdWUl9IcEpSZTl3Y2k1MEtFQUx0NUVBdWxkYWVueUdBRG93?oc=5">「日本のファッション・ビジネスの母」尾原蓉子氏が語る【AI時代に勝ち残るための4つの視座】 - ECのミカタ</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE8zM2tCNW1NeXBmU3NXdG5NZXFNLUlSVVRCSnA2aTFsd0N1cEljMjRXOFdjaUk3TUROczJmZ1JlSUZhODdRVERBZ2VVUzZZQlJvVjA3bnh1Rl9Nem9JYVNZ?oc=5">エルメス株は3割下落、バッグは24%の利益…バーキン・ファンドが映す「希少性ビジネス」の仕組みと限界 - 千葉テレビ放送</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTFBIMXd1WHRzYmVuTEo4ZlA4Wi1VNjgxV0J1TWtGam1wMjBhbkh3X0R3OHVZUVc3RFE0QWt2VXBHaGdyanNXcnd3dXlLRGRRUkIwNkV3?oc=5">KDDI、通話・SMSなどシンプルな機能に特化した携帯電話「INFOBAR ZERO」発売へ - ビジネスネットワーク</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxNMi1uUkNPdmFBc2tRNmgyUEVqVWNYZUJxWlNjU1NDRnFaYk13dW5SYTY1SGNhT1ZEQVVnTEh0YWtfRTktOGJPN05QMS1aZ2FOMFdhNGhBSUM5RG56U3FYaXZXRnNSOTE1Xy1aUkgwNFpRUE14cXB0UUJsLXZ6eGtaTEp1V1ZUOUNMRVp3Ulc0Vno3QU1IMTFSbkJTeHBQQlQ4bENTeEQ0RlJaUWRfTnY1eXJhQ084VkRFOFI3MGxhZlY?oc=5">Nvidia Earnings: Business as Usual as Forecasts Suggest That All Is Well and Shares Are Cheap | モーニングスター - Morningstar</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div></li><li class="s2-item" style="border-left:3px solid #6b728040"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE1GYjJxSnE4Y2FIZW5KbFdWXzhfOWJMaHBCbGtXRGlTS0M0cUVFUkNWT3BXbDVWeE1oWkNzTlNGMnBIYngwMHFMbVcyZWozSTVETTFqQzY2NlNtSjA?oc=5">Winners in the 23rd Annual Stevie® Awards for Women in Business Announced - 共同通信PRワイヤー</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#6b7280;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">自動運転</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ZdTlVTlZUMUJnbWtrS3U1dm9wZUo3RjR6djkxYmc4U2ZYQVlVb0RQb0xrQ0ZNVGZGX3NBaFpYNnB3YXZFaE11bjNnckVTaTJBRFRMQWp3d0xsdnpjaTg2Wjh2TGh0NTQ?oc=5">［徹底予測2027 電子部品］村田1兆円投資、TDKは技術開発 AI搭載機器で日本勢反攻へ - 日経ビジネス電子版</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #6b728040"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE5XVGw0WDEzMkRtWFFUU3BoREtlcXY3M1FULV9EdUNwNlBPMkl3R0pFTExOcEJQUHpDbWFqTlUxRko5U3F6a0J2R3NBUl9vTmVrVWtUQk96N0xmVzQ?oc=5">AMPERA and Berto Announce Proposed Business Combination to Accelerate Advanced Energy Technology Development and Commercialization - 共同通信PRワイヤー</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#6b7280;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">自動運転</span></div></li><li class="s2-item" style="border-left:3px solid #7c3aed40"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9zYVRpNVl0TkRPWi1RZUxtQWxrQ2JCa0tGWk0tWTJWNWxEb3JHX21ldl9MVF9TQzNXRTJaODJiT3YwSlBrTEUxMEU5dU1fMlVVRS0xMnNxOUh3cWV4TGV1S0ttZUFDblk?oc=5">開演5分前に「振りは全部忘れろ、責任は私が取る」 松山バレエ団の組織論 - 日経ビジネス電子版</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">ビジネス動向</span></div></li><li class="s2-item" style="border-left:3px solid #4f46e540"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1DZkZaa0Fvc1NUa1NTWU5tajhmRjVseVd0VnRaTUR5UjE5MlJPUmw3SGJCdUNtNTI3NlpVWnhodEVlaEcwTXV4WF85TFlUMG9XNDFr?oc=5">1FINITYが光NIC「N100」発表 遠隔地のAIサーバーを低遅延接続しスケールアクロス実現 - ビジネスネットワーク</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#4f46e5;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">AI開発</span></div></li><li class="s2-item" style="border-left:3px solid #0891b240"><a class="s2-title" href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1QeUdwNjVETzBqYlAtLWV5WnJBMERhNFl4ZHg4NWptRmlfb3UxNjY5Wk11VUFUdXhvQnVETzJLZDlqRjlXWXI1dHpiSEJRWHY3ajlnalRfR0RkTzBTVW9ucHBYZzZMY2s?oc=5">AGC平井社長が退任 「iPodの父」に通じる事業欲強い研究者、脱ガラス進める - 日経ビジネス電子版</a><div class="s2-meta"><span class="s2-source">GoogleNews(Business)</span><span style="background:#0891b2;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">テクノロジー企業</span></div></li></ul>
+
+  <div class="section-heading">★ その他 <span class="count">6</span></div>
+  <ul class="s1-list"><li class="s1-item"><a href="https://zenn.dev/aldagram_tech/articles/f7b57935e31070">スマホ内蔵のセンサーを使って周辺光取得を試す</a><span class="s1-meta"><span style="background:#6b7280;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">自動運転</span> <span class="s1-source">Zenn</span></span></li><li class="s1-item"><a href="https://zenn.dev/ctenopoma/books/optimization_ux">最適化プロダクトにおけるUX</a><span class="s1-meta"><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発</span> <span class="s1-source">Zenn</span></span></li><li class="s1-item"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE81Uy16WlFyRVpxT2JVVlZETXhIOVNMVnFncnJ0R3UtT1RlbnBrdTVyemNSUWFyYnh0cXdwSkFWd2owMjNadW1KSG0wRC1VaS1weElIdDJGYnNOcWFFZ2c?oc=5">「起業家甲子園 沖縄大会 2026」開催、沖縄高専「Rewave Technology」がNICT賞を受賞 - 沖縄タイムス社</a><span class="s1-meta"><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発</span> <span class="s1-source">GoogleNews(IT)</span></span></li><li class="s1-item"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTFBMVUhVM2tOQXcwM0pWbGtBTHlIa2h6c2JibllOUEU3cmZnbzJwb3FlQnQ5UFk1RHRrV1NvVXdWd0IxeXJXR1AwRklwaGFlOGpYd3p3SVY5TXlkOW82bFg1MlBTZ2V2WTEtb1RzNkViazNVcHhQdXNPWQ?oc=5">起業家甲子園 沖縄代表は沖縄高専「Rewave Technology」 - Infoseek</a><span class="s1-meta"><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発</span> <span class="s1-source">GoogleNews(IT)</span></span></li><li class="s1-item"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9xdGUteUxSdzQ2aFdvQ1BoZGo1dHduN2NWUnNvZE9YYmE2R044YVpsMVI2aW4wRVBGdzlXOWItMW5tek5Td1hOc29vZlMzbV9qQ0lfMnBuSC05b3JGNUktZ29zeDFhSXlKekhkbVA0VnZMY0UxeUtvenluZnpYclk?oc=5">起業家甲子園 沖縄代表は沖縄高専「Rewave Technology」（沖縄タイムス） - Yahoo!ニュース</a><span class="s1-meta"><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発</span> <span class="s1-source">GoogleNews(IT)</span></span></li><li class="s1-item"><a href="https://news.google.com/rss/articles/CBMickFVX3lxTE4xQk1kdnA0bWFQX2VYMnVRVnlDNVUxX3Z2aXRXWkF3X0h3Q0J5SmFIWnR2ZWV5WGRYX0VmY1lvZGcyM3hqbmk0eS1tOVJwSHF1ZUt1SmJpZzktbnAweDB5R3NkUWhubFR6cVNjQlZ1dnJldw?oc=5">「何もない町」にこそ勝機がある。住民激減の福島・大熊町でキウイ起業した2人の「場所選び」 - Business Insider Japan</a><span class="s1-meta"><span style="background:#16a34a;color:#fff;padding:3px 10px;border-radius:99px;font-size:.72em;font-weight:600;letter-spacing:.02em">個人開発</span> <span class="s1-source">GoogleNews(Business)</span></span></li></ul>
+</div>
+
+</body>
+</html>
